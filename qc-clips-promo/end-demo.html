@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="kit.css">
+<style>
+  .bg{background:radial-gradient(800px 800px at 50% 40%,rgba(232,168,18,.22),transparent 60%),linear-gradient(180deg,#0E3B2E,#082A20)}
+  #glow{position:absolute;left:190px;top:420px;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(232,168,18,.35),transparent 65%)}
+  #logo{position:absolute;left:390px;top:540px;width:300px;height:300px}
+  #tri{transform-origin:150px 150px}
+  #wordwrap{position:absolute;left:0;right:0;top:900px;text-align:center;overflow:hidden}
+  #word{position:relative;display:inline-block;overflow:hidden;font-family:var(--sans);font-weight:900;font-size:170px;letter-spacing:.06em;color:var(--gold);line-height:1.1;padding:0 10px}
+  #shine{position:absolute;top:0;bottom:0;left:0;width:120px;background:linear-gradient(90deg,transparent,rgba(255,248,220,.8),transparent);mix-blend-mode:overlay}
+  #line{position:absolute;left:340px;right:340px;top:1120px;height:5px;border-radius:5px;background:var(--gold);transform-origin:50% 50%}
+  #cta{position:absolute;left:60px;right:60px;top:1180px;text-align:center;font-weight:800;font-size:72px;line-height:1.1;color:#fff;letter-spacing:-.01em}
+  #sub{position:absolute;left:0;right:0;top:1300px;text-align:center;font-size:32px;font-weight:600;letter-spacing:.06em;color:var(--cream)}
+</style>
+</head>
+<body>
+<div class="bg" id="bg"></div>
+<div id="glow"></div>
+<svg id="logo" viewBox="0 0 300 300" aria-hidden="true">
+  <rect id="frame" x="12" y="12" width="276" height="276" rx="70" fill="none" stroke="#E8A812" stroke-width="14" stroke-dasharray="1000" pathLength="1000"/>
+  <path id="tri" d="M118 92 L214 150 L118 208 Z" fill="#E8A812" stroke="#E8A812" stroke-width="14" stroke-linejoin="round"/>
+</svg>
+<div id="wordwrap"><div id="word">QC CLIPS</div></div>
+<div id="line"></div>
+<div id="cta">Demo by QC Clips</div>
+<div id="sub">Websites · Videos · Bookings · Regina, SK</div>
+
+<script type="module">
+import { endCard } from './end.js';
+window.film = endCard();
+</script>
+</body>
+</html>

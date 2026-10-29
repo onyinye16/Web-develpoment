@@ -1,0 +1,125 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="kit.css">
+<style>
+  #phone{left:230px;top:468px;width:620px;height:1280px;transform-origin:50% 55%}
+  .screen{background:var(--cream)}
+  .sbar{color:var(--text);background:var(--cream)}
+  #view{position:absolute;left:0;top:100px;width:390px;height:771px;transform-origin:0 0;overflow:hidden}
+  .t1{background:linear-gradient(160deg,#C88E4E,#6B3C1E 55%,#2A160B)}
+  .t2{background:repeating-linear-gradient(35deg,rgba(232,168,18,.35) 0 6px,transparent 6px 16px),linear-gradient(160deg,#2F7A5F,#0E3B2E 70%)}
+  .t3{background:linear-gradient(160deg,#F6D3C9,#D98C8E 60%,#A85466)}
+  .t4{background:repeating-linear-gradient(90deg,rgba(247,193,203,.35) 0 4px,transparent 4px 22px),linear-gradient(160deg,#B4475F,#6A1F33 55%,#33101B)}
+  .t5{background:radial-gradient(circle at 50% 45%,rgba(232,168,18,.35),transparent 50%),linear-gradient(160deg,#6E5524,#2B2418 60%,#141210)}
+  .t6{background:linear-gradient(160deg,#FBEFE2,#EBCDB2 60%,#D2A586)}
+  .play{position:absolute;right:10px;top:10px;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.92);display:grid;place-items:center}
+  .tag{position:absolute;z-index:20}
+  .tag .pill{background:rgba(6,26,20,.92);font-size:34px;padding:18px 34px;box-shadow:0 20px 50px -10px rgba(0,0,0,.6)}
+  .tag .pill svg{color:var(--gold)}
+</style>
+</head>
+<body>
+<div class="bg" id="bg"></div>
+<div class="caption" id="cap" style="left:40px;right:40px;font-size:68px"><span class="hl">Websites. Videos.</span><br>Bookings that answer back.</div>
+
+<div class="phone" id="phone">
+  <div class="screen">
+    <div class="island"></div>
+    <div class="sbar"><span>9:41</span><span class="batt"></span></div>
+    <div id="view">
+      <div class="site" id="site">
+        <div class="s-head">
+          <div class="s-logo"><span class="s-mark"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M12 1.5l2.4 7.1 7.1 2.4-7.1 2.4L12 20.5l-2.4-7.1L2.5 11l7.1-2.4z" fill="#E8A812"/></svg></span>Glow Studio</div>
+          <span class="s-btn">Book Now</span>
+        </div>
+        <div class="s-hero">
+          <div class="k">✦ Hair · Braids · Nails · Lashes</div>
+          <h1>Walk in ordinary. Walk out <em>glowing.</em></h1>
+          <p>Downtown Regina's studio for silk presses, braids, nails and lashes — booked in under a minute.</p>
+          <span class="s-btn">Book Now</span>
+          <div class="s-chips"><span>★★★★★ 4.9</span><span>⚡ Replies instantly</span><span>📍 Downtown Regina</span></div>
+        </div>
+        <div class="s-sec" id="services">
+          <div class="e">Our services</div><h2>Everything you need to glow</h2>
+          <div class="s-card"><h3>Hair &amp; Silk Press</h3><ul><li>Signature Silk Press</li><li>Wash &amp; Blowout</li><li>Trim &amp; Shape</li></ul></div>
+          <div class="s-card"><h3>Braids &amp; Protective Styles</h3><ul><li>Knotless Braids</li><li>Passion Twists</li><li>Feed-in Cornrows</li></ul></div>
+          <div class="s-card"><h3>Nails</h3><ul><li>Gel-X Extensions</li><li>Classic French Tips</li><li>Gel Manicure</li></ul></div>
+        </div>
+        <div class="s-sec" id="gallery" style="background:var(--cream-2)">
+          <div class="e">Gallery</div><h2>Fresh from the chair</h2>
+          <div class="s-grid">
+            <div class="s-tile t1"><span class="play"><svg width="14" height="14" viewBox="0 0 24 24"><path d="M7 4l14 8-14 8z" fill="#0E3B2E"/></svg></span><b>Silk Press</b></div>
+            <div class="s-tile t2"><b>Knotless Braids</b></div>
+            <div class="s-tile t3"><b>Gel-X Nails</b></div>
+            <div class="s-tile t4"><span class="play"><svg width="14" height="14" viewBox="0 0 24 24"><path d="M7 4l14 8-14 8z" fill="#0E3B2E"/></svg></span><b>Passion Twists</b></div>
+            <div class="s-tile t5"><b>Volume Lashes</b></div>
+            <div class="s-tile t6"><b>French Tips</b></div>
+          </div>
+        </div>
+        <div class="s-sec" id="reviews">
+          <div class="e">Reviews</div><h2>Loved across Regina</h2>
+          <div class="s-rev"><div class="st">★★★★★</div><q>Best silk press I've had in Regina. Bouncy, shiny, and it lasted two full weeks.</q><small>Jasmine</small></div>
+          <div class="s-rev"><div class="st">★★★★★</div><q>They texted me back in literally seconds and fit me in that weekend.</q><small>Amina</small></div>
+          <div class="s-rev"><div class="st">★★★★★</div><q>Booking took me thirty seconds on my phone.</q><small>Chloe</small></div>
+        </div>
+        <div class="s-foot">1234 Victoria Ave, Regina · (306) 555-0142</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tag" id="tag1" style="left:24px;top:880px"><span class="pill"><svg viewBox="0 0 24 24"><path d="M12 1.5l2.4 7.1 7.1 2.4-7.1 2.4L12 20.5l-2.4-7.1L2.5 11l7.1-2.4z" fill="currentColor"/></svg>Services</span></div>
+<div class="tag" id="tag2" style="right:24px;top:1060px"><span class="pill"><svg viewBox="0 0 24 24"><path d="M7 4l14 8-14 8z" fill="currentColor"/></svg>Gallery &amp; videos</span></div>
+<div class="tag" id="tag3" style="left:24px;top:1240px"><span class="pill"><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.2 1.3-6.6L2.5 9.3l6.6-.8z" fill="currentColor"/></svg>5-star reviews</span></div>
+
+<script type="module">
+import { prog, ease, lerp, clamp, dust, caption } from './kit.js';
+
+const drift = dust(document.getElementById('bg'), 71);
+const cap = caption(document.getElementById('cap'));
+const $ = (id) => document.getElementById(id);
+const phone = $('phone'), view = $('view'), site = $('site');
+const VS = 572 / 390;
+view.style.transform = `scale(${VS})`;
+
+// scroll stops: hero, then each section's top, held for a beat
+const stop = (id) => Math.min($(id).offsetTop - 10, site.offsetHeight - 771);
+const stops = [[0, 0], [0.55, 0], [1.15, stop('services')], [1.9, stop('services')], [2.5, stop('gallery')], [3.25, stop('gallery')], [3.85, stop('reviews')]];
+const tags = [[$('tag1'), 1.1, -1], [$('tag2'), 2.45, 1], [$('tag3'), 3.8, -1]];
+
+function scrollAt(t) {
+  for (let i = 1; i < stops.length; i++) {
+    if (t <= stops[i][0]) {
+      const [t0, a] = stops[i - 1], [t1, b] = stops[i];
+      return lerp(a, b, ease.inOut((t - t0) / (t1 - t0)));
+    }
+  }
+  return stops[stops.length - 1][1];
+}
+
+window.film = {
+  duration: 5,
+  frame(t) {
+    drift(t);
+    cap(t, 0.15, 0.09);
+    // a slow, confident push with a gentle tilt
+    const pk = ease.outQuint(prog(t, 0, 0.6));
+    phone.style.opacity = pk;
+    phone.style.transform = `translateY(${(1 - pk) * 50}px) scale(${lerp(0.97, 1.03, ease.inOut(prog(t, 0, 5)))}) rotate(${Math.sin(t * 0.9) * 1.2}deg)`;
+    site.style.transform = `translateY(${-scrollAt(t)}px)`;
+
+    // a label slides in for each section, then gives way to the next
+    tags.forEach(([el, at, side], i) => {
+      const inK = ease.outQuint(prog(t, at, 0.5));
+      const next = tags[i + 1];
+      const outK = next ? ease.inOut(prog(t, next[1] - 0.2, 0.35)) : 0;
+      el.style.opacity = clamp(inK * 1.5) * (1 - outK);
+      el.style.transform = `translateX(${side * (1 - inK) * 120 + side * outK * 60}px) scale(${lerp(0.85, 1, inK)})`;
+    });
+  },
+};
+</script>
+</body>
+</html>
