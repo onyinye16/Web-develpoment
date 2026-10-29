@@ -1,0 +1,112 @@
+/* QC Clips promo: shared look for every shot (1080 × 1920) */
+:root{
+  --green:#0E3B2E; --green-2:#14503F; --green-3:#1E6B54; --deep:#061a14; --ink:#041210;
+  --gold:#E8A812; --gold-soft:#F4CF6A; --gold-deep:#A87406;
+  --cream:#FBF6EC; --cream-2:#F3EAD8; --chat:#F4F1EA; --bubble:#E4E2DC; --text:#15211B;
+  --serif:"Iowan Old Style",Charter,"Bitstream Charter","Palatino Linotype",Georgia,serif;
+  --sans:Inter,"SF Pro Display",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:var(--deep);font-family:var(--sans);color:var(--cream);-webkit-font-smoothing:antialiased}
+.abs{position:absolute}
+
+/* Background: deep green with a gold glow and floating dust */
+.bg{position:absolute;inset:0;overflow:hidden;background:
+  radial-gradient(900px 700px at 80% 8%,rgba(232,168,18,.20),transparent 60%),
+  radial-gradient(1000px 900px at 10% 95%,rgba(30,107,84,.55),transparent 65%),
+  linear-gradient(170deg,#0B3226 0%,#08251C 50%,#041510 100%)}
+.dust{position:absolute;border-radius:50%;background:var(--gold-soft)}
+
+/* Burned-in caption, top third (clear of Reels/TikTok bottom UI) */
+.caption{position:absolute;left:70px;right:70px;top:210px;text-align:center;font-family:var(--sans);font-weight:800;font-size:82px;line-height:1.06;letter-spacing:-.02em;color:#fff;text-shadow:0 4px 30px rgba(0,0,0,.55);z-index:20}
+.caption .hl{color:var(--gold)}
+.caption .w{display:inline-block;will-change:transform,opacity}
+.kicker{position:absolute;left:0;right:0;top:140px;text-align:center;font-size:30px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-soft);z-index:20}
+
+/* Phone */
+.phone{position:absolute;background:#0A0E0C;border-radius:112px;padding:24px;box-shadow:0 60px 140px -30px rgba(0,0,0,.8),inset 0 0 0 3px rgba(255,255,255,.09),0 0 0 2px #1d2622}
+.screen{position:relative;width:100%;height:100%;border-radius:90px;overflow:hidden;background:var(--chat);color:var(--text)}
+.island{position:absolute;top:22px;left:50%;width:190px;height:54px;margin-left:-95px;border-radius:30px;background:#000;z-index:30}
+.sbar{position:absolute;top:0;left:0;right:0;height:100px;display:flex;justify-content:space-between;align-items:center;padding:6px 64px 0;font-size:32px;font-weight:700;z-index:25}
+.batt{width:48px;height:22px;border:3px solid currentColor;border-radius:7px;position:relative;opacity:.9}
+.batt::after{content:"";position:absolute;inset:3px 10px 3px 3px;background:currentColor;border-radius:2px}
+
+/* Chat */
+.chat-head{position:absolute;top:100px;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:8px;padding:6px 0 22px;border-bottom:2px solid rgba(0,0,0,.07);background:rgba(255,255,255,.75)}
+.avatar{width:96px;height:96px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:40px;color:#fff;background:linear-gradient(135deg,var(--green-3),var(--green))}
+.avatar.gold{background:linear-gradient(135deg,var(--gold-soft),var(--gold));color:var(--green)}
+.chat-head b{font-size:32px}
+.chat-head small{font-size:24px;color:#6b726e;font-weight:500}
+.thread{position:absolute;left:34px;right:34px;display:flex;flex-direction:column;gap:16px}
+.stamp{text-align:center;font-size:24px;color:#7d837f;font-weight:600;margin:6px 0}
+.bubble{max-width:82%;padding:24px 32px;border-radius:44px;font-size:36px;line-height:1.3;transform-origin:left bottom}
+.bubble.in{align-self:flex-start;background:var(--bubble);border-bottom-left-radius:12px}
+.bubble.out{align-self:flex-end;background:var(--green);color:#fff;border-bottom-right-radius:12px;transform-origin:right bottom}
+.bubble b{font-weight:800}
+.typing{align-self:flex-start;display:flex;gap:10px;padding:28px 32px;border-radius:44px;border-bottom-left-radius:12px;background:var(--bubble);transform-origin:left bottom}
+.typing i{width:16px;height:16px;border-radius:50%;background:#8b908c;display:block}
+.meta{font-size:24px;font-weight:600;color:#6b726e}
+
+/* Notifications (lock-screen style) */
+.notif{position:absolute;left:30px;right:30px;display:flex;gap:22px;align-items:flex-start;padding:26px 28px;border-radius:44px;background:rgba(255,255,255,.88);backdrop-filter:blur(20px);box-shadow:0 20px 50px -20px rgba(0,0,0,.5);color:var(--text)}
+.notif .app{width:76px;height:76px;border-radius:20px;flex:none;display:grid;place-items:center;background:linear-gradient(180deg,#5BE37D,#2BBF55)}
+.notif .app svg{width:44px;height:44px}
+.notif .txt{flex:1;min-width:0}
+.notif .top{display:flex;justify-content:space-between;font-size:26px;color:#5d6560;font-weight:600}
+.notif b{display:block;font-size:31px;margin-top:2px}
+.notif p{font-size:31px;line-height:1.28;margin-top:2px}
+
+/* Gold check */
+.check{width:150px;height:150px;border-radius:50%;background:var(--gold);display:grid;place-items:center;box-shadow:0 20px 60px -10px rgba(232,168,18,.7)}
+.check svg{width:84px;height:84px}
+
+/* Pills / chips */
+.pill{display:inline-flex;align-items:center;gap:14px;padding:16px 30px;border-radius:999px;font-size:30px;font-weight:700;background:rgba(251,246,236,.1);border:2px solid rgba(232,168,18,.45);color:var(--cream)}
+.pill svg{width:34px;height:34px}
+
+/* Mini Glow Studio site, laid out at 390px wide and scaled into a phone */
+.site{position:absolute;left:0;top:0;width:390px;transform-origin:0 0;background:var(--cream);color:var(--text);font-family:var(--sans)}
+.s-head{height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:rgba(251,246,236,.96);border-bottom:1px solid rgba(14,59,46,.1)}
+.s-logo{display:flex;align-items:center;gap:8px;font-family:var(--serif);font-weight:700;font-size:19px;color:var(--green)}
+.s-mark{width:30px;height:30px;border-radius:9px;background:var(--green);display:grid;place-items:center}
+.s-btn{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:var(--gold);color:var(--green);font-weight:800;font-size:14px;padding:10px 16px}
+.s-hero{background:radial-gradient(400px 300px at 90% 0%,rgba(232,168,18,.3),transparent 60%),linear-gradient(160deg,#0B3226,var(--green) 50%,#0A2C22);color:var(--cream);padding:34px 20px 30px}
+.s-hero .k{font-size:11px;letter-spacing:.14em;font-weight:700;color:var(--gold-soft);text-transform:uppercase}
+.s-hero h1{font-family:var(--serif);font-size:44px;line-height:1.05;margin-top:12px;font-weight:700}
+.s-hero h1 em{color:var(--gold)}
+.s-hero p{font-size:15px;line-height:1.5;margin-top:12px;color:rgba(251,246,236,.85)}
+.s-hero .s-btn{margin-top:20px;font-size:17px;padding:16px 28px}
+.s-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:18px}
+.s-chips span{font-size:11.5px;font-weight:600;padding:6px 10px;border-radius:999px;background:rgba(251,246,236,.1);border:1px solid rgba(251,246,236,.2)}
+.s-sec{padding:28px 18px}
+.s-sec .e{font-size:11px;font-weight:800;letter-spacing:.16em;color:var(--gold-deep);text-transform:uppercase}
+.s-sec h2{font-family:var(--serif);font-size:30px;color:var(--green);margin:6px 0 16px;line-height:1.1}
+.s-card{background:#fff;border:1px solid rgba(14,59,46,.12);border-radius:16px;padding:16px;margin-bottom:12px}
+.s-card h3{font-family:var(--serif);font-size:20px;color:var(--green)}
+.s-card ul{list-style:none;margin-top:8px}
+.s-card li{font-size:13.5px;font-weight:600;padding:6px 0;border-top:1px dashed rgba(14,59,46,.14)}
+.s-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.s-tile{aspect-ratio:4/5;border-radius:14px;position:relative;overflow:hidden}
+.s-tile b{position:absolute;left:10px;bottom:10px;color:#fff;font-family:var(--serif);font-size:16px;text-shadow:0 2px 8px rgba(0,0,0,.4)}
+.s-rev{background:#fff;border:1px solid rgba(14,59,46,.12);border-radius:16px;padding:16px;margin-bottom:10px}
+.s-rev .st{color:var(--gold);font-size:16px;letter-spacing:2px}
+.s-rev q{display:block;font-family:var(--serif);font-size:16px;line-height:1.4;margin:6px 0;quotes:none}
+.s-rev small{font-weight:700;font-size:13px}
+.s-foot{background:var(--green);color:var(--cream);padding:24px 18px;font-size:13px}
+
+/* Booking sheet in the mini site */
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--cream);border-radius:26px 26px 0 0;padding:14px 20px 26px;box-shadow:0 -20px 50px rgba(0,0,0,.35)}
+.sheet .grab{width:40px;height:5px;border-radius:5px;background:#e3d6bd;margin:0 auto 12px}
+.sheet h2{font-family:var(--serif);font-size:28px;color:var(--green)}
+.sheet .sub{font-size:13px;color:#4a564f;margin-top:2px}
+.fld{margin-top:12px}
+.fld label{display:block;font-size:12.5px;font-weight:800;color:var(--green);margin-bottom:5px}
+.fld .in{height:46px;border-radius:12px;border:2px solid #e3d6bd;background:#fff;display:flex;align-items:center;padding:0 14px;font-size:16px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden}
+.fld .in.active{border-color:var(--green-3);box-shadow:0 0 0 3px rgba(30,107,84,.15)}
+.fld .ph{color:#9aa39e;font-weight:500}
+.caret{display:inline-block;width:2px;height:20px;background:var(--green);margin-left:1px}
+.sheet .go{margin-top:16px;height:52px;border-radius:999px;background:var(--gold);color:var(--green);display:flex;align-items:center;justify-content:center;gap:8px;font-weight:800;font-size:16px}
+
+/* Finger + tap ripple */
+.finger{position:absolute;width:150px;height:300px;z-index:40;transform-origin:30% 6%}
+.ripple{position:absolute;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;border:6px solid rgba(255,255,255,.9);z-index:39}

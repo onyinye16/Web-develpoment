@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="kit.css">
+<style>
+  #phone{left:230px;top:468px;width:620px;height:1280px;transform-origin:50% 60%}
+  .sbar{background:rgba(255,255,255,.75)}
+  .thread{top:330px}
+  #reply{max-width:88%}
+  #check{position:absolute;left:465px;top:1330px;z-index:10}
+  .ring{position:absolute;left:540px;top:1405px;width:150px;height:150px;margin:-75px 0 0 -75px;border-radius:50%;border:6px solid var(--gold);z-index:9}
+  #sent{position:absolute;left:0;right:0;top:1500px;text-align:center;z-index:10}
+  #night{position:absolute;left:0;right:0;top:1765px;text-align:center}
+</style>
+</head>
+<body>
+<div class="bg" id="bg"></div>
+<div class="caption" id="cap">Replies instantly. <span class="hl">Even at midnight.</span></div>
+
+<div class="phone" id="phone">
+  <div class="screen">
+    <div class="island"></div>
+    <div class="sbar"><span id="clock">11:58</span><span class="batt"></span></div>
+    <div class="chat-head"><span class="avatar">G</span><b>Glow Studio Regina</b><small>Text message</small></div>
+    <div class="thread">
+      <div class="stamp">Today 11:58 PM · booking request from glowstudio.ca</div>
+      <div class="typing" id="dots"><i></i><i></i><i></i></div>
+      <div class="bubble in" id="reply">Hi Amina! You're booked for <b>knotless braids, Thursday 2 PM</b>. See you then! — Glow Studio</div>
+      <div class="meta" id="meta">Sent automatically · 3 sec after booking</div>
+    </div>
+  </div>
+</div>
+
+<div class="ring" id="ring"></div>
+<div class="check" id="check"><svg viewBox="0 0 24 24" fill="none" stroke="#0E3B2E" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path id="tick" d="M5 12.5l4.5 4.5L19 7.5" stroke-dasharray="24" stroke-dashoffset="24"/></svg></div>
+<div id="sent"><span class="pill">Booked ✓ while you slept</span></div>
+<div id="night"><span class="pill"><svg viewBox="0 0 24 24" fill="#F4CF6A"><path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z"/></svg>11:58 PM</span></div>
+
+<script type="module">
+import { prog, ease, lerp, dust, caption, pop, typing } from './kit.js';
+
+const drift = dust(document.getElementById('bg'), 41);
+const cap = caption(document.getElementById('cap'));
+const $ = (id) => document.getElementById(id);
+const phone = $('phone'), dots = $('dots'), reply = $('reply'), meta = $('meta');
+const check = $('check'), tick = $('tick'), ring = $('ring'), sent = $('sent'), night = $('night');
+
+window.film = {
+  duration: 6,
+  frame(t) {
+    drift(t);
+    cap(t, 0.2);
+    const pk = ease.outQuint(prog(t, 0, 0.7));
+    phone.style.transform = `translateY(${(1 - pk) * 60}px) scale(${lerp(0.94, 1, pk)})`;
+    phone.style.opacity = pk;
+    const nk = ease.out(prog(t, 0.3, 0.6));
+    night.style.opacity = nk;
+    night.style.transform = `translateY(${(1 - nk) * 24}px)`;
+
+    // typing… then the reply lands
+    typing(dots, t, 0.6, 1.9);
+    pop(reply, t, 1.9, 0.7);
+    if (t < 1.9) reply.style.display = 'none'; else reply.style.display = '';
+    meta.style.opacity = ease.out(prog(t, 2.5, 0.4));
+
+    // a gold check seals it
+    const ck = prog(t, 2.9, 0.7);
+    check.style.opacity = ck > 0 ? 1 : 0;
+    check.style.transform = `scale(${ease.spring(ck)})`;
+    tick.style.strokeDashoffset = 24 * (1 - ease.out(prog(t, 3.15, 0.45)));
+    const rk = prog(t, 3.0, 0.9);
+    ring.style.opacity = rk > 0 && rk < 1 ? (1 - rk) * 0.9 : 0;
+    ring.style.transform = `scale(${lerp(1, 2.2, ease.out(rk))})`;
+    const sk = ease.out(prog(t, 3.5, 0.5));
+    sent.style.opacity = sk;
+    sent.style.transform = `translateY(${(1 - sk) * 24}px)`;
+  },
+};
+</script>
+</body>
+</html>

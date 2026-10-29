@@ -1,0 +1,162 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="kit.css">
+<style>
+  #phone{left:230px;top:468px;width:620px;height:1280px;transform-origin:0 0}
+  .screen{background:var(--cream)}
+  .sbar{color:var(--text);background:var(--cream)}
+  #view{position:absolute;left:0;top:100px;width:390px;height:690px;transform-origin:0 0;overflow:hidden}
+  #dim{position:absolute;inset:0;background:rgba(6,22,17,.55)}
+  .urlbar{position:absolute;left:0;right:0;bottom:0;height:120px;background:rgba(243,234,216,.97);border-top:2px solid rgba(14,59,46,.08);display:flex;justify-content:center;padding-top:22px}
+  .urlbar span{display:inline-flex;align-items:center;gap:10px;height:62px;padding:0 40px;border-radius:20px;background:#fff;font-size:26px;font-weight:600;color:#3f4c45}
+  .sweep{position:absolute;top:-400px;width:700px;height:2800px;background:linear-gradient(90deg,transparent,rgba(232,168,18,.55),rgba(255,240,200,.85),rgba(232,168,18,.55),transparent);transform:rotate(18deg);z-index:50;pointer-events:none}
+  #go.ok{background:var(--green);color:var(--cream)}
+</style>
+</head>
+<body>
+<div class="bg" id="bg"></div>
+<div class="caption" id="cap">A website that <span class="hl">takes the booking</span> for you.</div>
+
+<div class="phone" id="phone">
+  <div class="screen">
+    <div class="island"></div>
+    <div class="sbar"><span>2:16</span><span class="batt"></span></div>
+    <div id="view">
+      <div class="site">
+        <div class="s-head">
+          <div class="s-logo"><span class="s-mark"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M12 1.5l2.4 7.1 7.1 2.4-7.1 2.4L12 20.5l-2.4-7.1L2.5 11l7.1-2.4z" fill="#E8A812"/></svg></span>Glow Studio</div>
+          <span class="s-btn">Book Now</span>
+        </div>
+        <div class="s-hero">
+          <div class="k">✦ Hair · Braids · Nails · Lashes</div>
+          <h1>Walk in ordinary. Walk out <em>glowing.</em></h1>
+          <p>Downtown Regina's studio for silk presses, braids, nails and lashes — booked in under a minute.</p>
+          <span class="s-btn" id="heroBtn">Book Now</span>
+          <div class="s-chips"><span>★★★★★ 4.9</span><span>⚡ Replies instantly</span><span>📍 Downtown Regina</span></div>
+        </div>
+        <div class="s-sec"><div class="e">Our services</div><h2>Everything you need to glow</h2></div>
+      </div>
+      <div id="dim"></div>
+      <div class="sheet" id="sheet">
+        <div class="grab"></div>
+        <h2>Book your glow</h2>
+        <p class="sub">Takes 30 seconds. We'll text you right away.</p>
+        <div class="fld"><label>First name</label><div class="in" id="fName"></div></div>
+        <div class="fld"><label>Service</label><div class="in" id="fSvc"></div></div>
+        <div class="fld"><label>Day &amp; time</label><div class="in" id="fWhen"></div></div>
+        <div class="fld"><label>Mobile number</label><div class="in" id="fPhone"></div></div>
+        <div class="go" id="go">Request appointment</div>
+      </div>
+    </div>
+    <div class="urlbar"><span>🔒 glowstudio.ca</span></div>
+  </div>
+</div>
+
+<div class="ripple" id="ripple"></div>
+<svg class="finger" id="finger" viewBox="0 0 150 300" aria-hidden="true">
+  <defs><linearGradient id="skin" x1="0" x2="1"><stop offset="0" stop-color="#9A6646"/><stop offset="1" stop-color="#714228"/></linearGradient></defs>
+  <path d="M30 40 C30 12 70 12 70 40 L72 170 C110 150 150 175 150 215 L150 300 L20 300 L14 220 C8 190 20 175 30 170 Z" fill="url(#skin)"/>
+  <rect x="36" y="14" width="28" height="30" rx="12" fill="#C99A7C" opacity=".75"/>
+  <path d="M72 170 C80 185 82 200 80 214" stroke="#5e351f" stroke-width="3" fill="none" opacity=".5"/>
+</svg>
+
+<script type="module">
+import { prog, ease, lerp, clamp, dust, caption, type } from './kit.js';
+
+const drift = dust(document.getElementById('bg'), 23);
+const cap = caption(document.getElementById('cap'));
+const $ = (id) => document.getElementById(id);
+const phone = $('phone'), view = $('view'), sheet = $('sheet'), dim = $('dim');
+const finger = $('finger'), ripple = $('ripple'), heroBtn = $('heroBtn'), go = $('go');
+const fields = { name: $('fName'), svc: $('fSvc'), when: $('fWhen'), phone: $('fPhone') };
+
+const PS = 1;                  // phone scale on the stage
+const VS = 572 / 390;          // site scale inside the screen
+view.style.transform = `scale(${VS})`;
+const sweep = document.createElement('div'); sweep.className = 'sweep'; document.body.appendChild(sweep);
+
+/** Stage point of the middle of an element inside the site view (layout only, so transforms never move it). */
+function at(el) {
+  let x = el.offsetWidth / 2, y = el.offsetHeight / 2, n = el;
+  while (n && n !== view) { x += n.offsetLeft; y += n.offsetTop; n = n.offsetParent; }
+  return [230 + PS * (24 + VS * x), 468 + PS * (24 + 100 + VS * y)];
+}
+// the sheet's own offsetTop is its resting place; read targets before it is moved
+const T = { hero: at(heroBtn), name: at(fields.name), svc: at(fields.svc), when: at(fields.when), phone: at(fields.phone), go: at(go) };
+const OFF = [1150, 2050];
+
+// where the fingertip is when: travel between taps, each tap pressed for a beat
+const path = [
+  [0.9, OFF], [1.55, T.hero], [2.25, T.hero], [2.55, T.name], [3.25, T.name], [3.45, T.svc], [3.85, T.svc],
+  [4.05, T.when], [4.45, T.when], [4.65, T.phone], [5.45, T.phone], [5.75, T.go], [6.25, T.go], [6.85, OFF],
+];
+const taps = [1.6, 2.6, 3.5, 4.1, 4.7, 5.8];
+
+function fingerAt(t) {
+  if (t <= path[0][0]) return path[0][1];
+  for (let i = 1; i < path.length; i++) {
+    if (t <= path[i][0]) {
+      const [t0, a] = path[i - 1], [t1, b] = path[i];
+      const k = ease.inOut((t - t0) / (t1 - t0));
+      return [lerp(a[0], b[0], k), lerp(a[1], b[1], k) - Math.sin(k * Math.PI) * 40];
+    }
+  }
+  return path[path.length - 1][1];
+}
+
+window.film = {
+  duration: 7,
+  frame(t) {
+    drift(t);
+    cap(t, 0.45);
+
+    // the turn: a gold sweep, then the website rises in
+    const sw = ease.inOut(prog(t, 0, 0.8));
+    sweep.style.left = `${lerp(-900, 1300, sw)}px`;
+    sweep.style.opacity = t < 0.85 ? 1 : 0;
+    const pk = ease.outQuint(prog(t, 0.15, 0.9));
+    phone.style.transform = `translateY(${(1 - pk) * 420}px) scale(${PS})`;
+    phone.style.opacity = clamp(pk * 1.6);
+
+    // finger and taps
+    const [fx, fy] = fingerAt(t);
+    const press = taps.some((tp) => t >= tp && t < tp + 0.16);
+    finger.style.left = `${fx - 45}px`;
+    finger.style.top = `${fy - 14}px`;
+    finger.style.transform = `rotate(-14deg) scale(${press ? 0.93 : 1})`;
+    finger.style.opacity = clamp((t - 0.9) * 4) * clamp((6.95 - t) * 4);
+    const tp = taps.filter((x) => t >= x).pop();
+    const rk = tp == null ? 1 : prog(t, tp, 0.5);
+    const tapPos = tp == null ? OFF : fingerAt(tp);
+    ripple.style.left = `${tapPos[0]}px`; ripple.style.top = `${tapPos[1]}px`;
+    ripple.style.opacity = rk < 1 ? (1 - rk) * 0.9 : 0;
+    ripple.style.transform = `scale(${lerp(0.3, 1.3, ease.out(rk))})`;
+    heroBtn.style.transform = `scale(${t >= 1.6 && t < 1.8 ? 0.94 : 1})`;
+
+    // the booking sheet slides up
+    const sk = ease.outQuint(prog(t, 1.8, 0.6));
+    sheet.style.transform = `translateY(${(1 - sk) * 105}%)`;
+    dim.style.opacity = sk;
+
+    // the form fills in
+    const active = t >= 4.7 ? 'phone' : t >= 4.1 ? 'when' : t >= 3.5 ? 'svc' : t >= 2.6 ? 'name' : null;
+    Object.entries(fields).forEach(([k, el]) => el.classList.toggle('active', k === active && t < 5.75));
+    type(fields.name, 'Amina', t, 2.7, 0.5, 'e.g. Amina');
+    fields.svc.innerHTML = t >= 3.6 ? 'Knotless Braids' : '<span class="ph">Choose a service…</span>';
+    fields.when.innerHTML = t >= 4.2 ? 'Thursday · 2:00 PM' : '<span class="ph">Pick a time…</span>';
+    type(fields.phone, '(306) 555-0147', t, 4.8, 0.65, '(306) 555-0123');
+    fields.svc.style.opacity = t >= 3.6 ? lerp(0.3, 1, prog(t, 3.6, 0.25)) : 1;
+    fields.when.style.opacity = t >= 4.2 ? lerp(0.3, 1, prog(t, 4.2, 0.25)) : 1;
+
+    // request sent
+    const done = t >= 6.0;
+    go.classList.toggle('ok', done);
+    go.textContent = done ? '✓  Booked!' : 'Request appointment';
+    go.style.transform = `scale(${t >= 5.8 && t < 6.0 ? 0.95 : done ? lerp(1.08, 1, ease.out(prog(t, 6.0, 0.4))) : 1})`;
+  },
+};
+</script>
+</body>
+</html>
