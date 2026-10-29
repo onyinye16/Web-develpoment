@@ -1,0 +1,1016 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Glow Studio Regina — Hair, Braids, Nails &amp; Lashes</title>
+<meta name="description" content="Glow Studio Regina: silk presses, knotless braids, Gel-X nails and lash extensions in downtown Regina. Book online in seconds.">
+<meta name="theme-color" content="#0E3B2E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230E3B2E'/%3E%3Cpath d='M32 10 L36 28 L54 32 L36 36 L32 54 L28 36 L10 32 L28 28 Z' fill='%23E8A812'/%3E%3C/svg%3E">
+<style>
+  :root{
+    --green:#0E3B2E;
+    --green-2:#14503F;
+    --green-3:#1E6B54;
+    --gold:#E8A812;
+    --gold-soft:#F4CF6A;
+    --gold-ink:#8A6206;      /* gold dark enough to read on cream */
+    --cream:#FBF6EC;
+    --cream-2:#F3EAD8;
+    --cream-3:#EADDC4;
+    --ink:#15211B;
+    --ink-2:#3F4C45;
+    --line:rgba(14,59,46,.14);
+    --white:#fff;
+    --radius:20px;
+    --shadow-sm:0 2px 8px rgba(14,59,46,.08);
+    --shadow:0 14px 40px -12px rgba(14,59,46,.28);
+    --shadow-lg:0 30px 80px -20px rgba(8,36,28,.45);
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --header-h:68px;
+    --ease:cubic-bezier(.2,.7,.2,1);
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--cream);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  img,svg{display:block;max-width:100%}
+  a{color:inherit}
+  button{font:inherit;color:inherit}
+  h1,h2,h3{font-family:var(--serif);font-weight:600;line-height:1.1;letter-spacing:-.01em;margin:0}
+  p{margin:0}
+  section{scroll-margin-top:calc(var(--header-h) + 8px)}
+  .wrap{width:100%;max-width:1160px;margin:0 auto;padding:0 20px}
+  .eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:13px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-ink)}
+  .eyebrow::before{content:"";width:28px;height:2px;background:var(--gold);border-radius:2px}
+  .section{padding:84px 0}
+  .section-head{max-width:640px;margin-bottom:40px}
+  .section-head h2{font-size:clamp(34px,6vw,52px);margin-top:12px;color:var(--green)}
+  .section-head p{margin-top:14px;color:var(--ink-2);font-size:18px}
+  .center{text-align:center;margin-left:auto;margin-right:auto}
+  .center .eyebrow::after{content:"";width:28px;height:2px;background:var(--gold);border-radius:2px}
+  :focus-visible{outline:3px solid var(--gold);outline-offset:3px;border-radius:6px}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+
+  /* ---------- Buttons ---------- */
+  .btn{white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:0 26px;border-radius:999px;border:0;cursor:pointer;font-weight:700;font-size:16px;letter-spacing:.01em;text-decoration:none;transition:transform .25s var(--ease),box-shadow .25s var(--ease),background .25s;-webkit-tap-highlight-color:transparent}
+  .btn-gold{background:var(--gold);color:var(--green);box-shadow:0 8px 22px -8px rgba(232,168,18,.8)}
+  .btn-gold:hover{transform:translateY(-2px);background:#F2B624;box-shadow:0 14px 30px -10px rgba(232,168,18,.9)}
+  .btn-gold:active{transform:translateY(0) scale(.98)}
+  .btn-ghost{background:transparent;color:var(--cream);border:2px solid rgba(251,246,236,.4)}
+  .btn-ghost:hover{border-color:var(--gold);color:var(--gold-soft);transform:translateY(-2px)}
+  .btn-green{background:var(--green);color:var(--cream)}
+  .btn-green:hover{background:var(--green-2);transform:translateY(-2px);box-shadow:var(--shadow)}
+  .btn svg{width:18px;height:18px}
+
+  /* ---------- Header ---------- */
+  .header{position:sticky;top:0;z-index:50;height:var(--header-h);background:rgba(251,246,236,.88);backdrop-filter:saturate(1.4) blur(14px);-webkit-backdrop-filter:saturate(1.4) blur(14px);border-bottom:1px solid transparent;transition:border-color .3s,box-shadow .3s}
+  .header.scrolled{border-bottom-color:var(--line);box-shadow:0 6px 24px -14px rgba(14,59,46,.35)}
+  .header .wrap{height:100%;display:flex;align-items:center;justify-content:space-between;gap:16px}
+  .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--green)}
+  .logo-mark{width:36px;height:36px;border-radius:11px;background:var(--green);display:grid;place-items:center;flex:none}
+  .logo-mark svg{width:20px;height:20px}
+  .logo-text{white-space:nowrap;font-family:var(--serif);font-size:21px;font-weight:600;line-height:1}
+  .logo-text small{display:block;font-family:var(--sans);font-size:10px;font-weight:700;letter-spacing:.3em;color:var(--gold-ink);margin-top:4px}
+  .nav{display:none;gap:4px}
+  .nav a{text-decoration:none;font-weight:600;font-size:15px;color:var(--ink-2);padding:10px 14px;border-radius:999px;transition:color .2s,background .2s}
+  .nav a:hover{color:var(--green);background:var(--cream-2)}
+  .header-actions{display:flex;align-items:center;gap:8px}
+  .header .btn{min-height:44px;padding:0 20px;font-size:15px}
+  .menu-btn{width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--white);display:grid;place-items:center;cursor:pointer}
+  .menu-btn span{display:block;width:18px;height:2px;background:var(--green);border-radius:2px;position:relative;transition:background .2s}
+  .menu-btn span::before,.menu-btn span::after{content:"";position:absolute;left:0;width:18px;height:2px;background:var(--green);border-radius:2px;transition:transform .25s var(--ease)}
+  .menu-btn span::before{top:-6px}.menu-btn span::after{top:6px}
+  .menu-open .menu-btn span{background:transparent}
+  .menu-open .menu-btn span::before{transform:translateY(6px) rotate(45deg)}
+  .menu-open .menu-btn span::after{transform:translateY(-6px) rotate(-45deg)}
+  .mobile-nav{position:fixed;top:var(--header-h);left:0;right:0;z-index:49;background:var(--cream);border-bottom:1px solid var(--line);box-shadow:var(--shadow);padding:8px 20px 20px;transform:translateY(-12px);opacity:0;visibility:hidden;transition:all .25s var(--ease)}
+  .menu-open .mobile-nav{transform:none;opacity:1;visibility:visible}
+  .mobile-nav a{display:flex;align-items:center;justify-content:space-between;text-decoration:none;font-family:var(--serif);font-size:24px;color:var(--green);padding:14px 4px;border-bottom:1px solid var(--line)}
+  .mobile-nav a:last-child{border-bottom:0}
+  .mobile-nav a::after{content:"→";font-family:var(--sans);font-size:18px;color:var(--gold-ink)}
+  @media (max-width:379px){.logo-mark{display:none}}
+  @media (max-width:639px){.hero-cta .btn{flex:1 1 220px}}
+  @media (min-width:880px){.nav{display:flex}.menu-btn,.mobile-nav{display:none}}
+
+  /* ---------- Hero ---------- */
+  .hero{position:relative;overflow:hidden;background:
+      radial-gradient(900px 500px at 85% -10%,rgba(232,168,18,.28),transparent 60%),
+      radial-gradient(700px 500px at -10% 110%,rgba(30,107,84,.9),transparent 60%),
+      linear-gradient(160deg,#0B3226 0%,var(--green) 45%,#0A2C22 100%);
+    color:var(--cream);padding:56px 0 72px}
+  .hero::after{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(244,207,106,.18) 1px,transparent 1.4px);background-size:26px 26px;mask-image:linear-gradient(180deg,transparent,#000 40%,transparent);-webkit-mask-image:linear-gradient(180deg,transparent,#000 40%,transparent);pointer-events:none}
+  .hero .wrap{position:relative;z-index:1;display:grid;gap:44px;align-items:center}
+  .hero-kicker{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-soft);background:rgba(232,168,18,.12);border:1px solid rgba(232,168,18,.35);padding:8px 14px;border-radius:999px}
+  .hero h1{font-size:clamp(44px,10.5vw,82px);margin-top:20px;font-weight:600}
+  .hero h1 em{font-style:italic;color:var(--gold);display:inline-block;position:relative}
+  .hero h1 em::after{content:"";position:absolute;left:2%;right:2%;bottom:.06em;height:.08em;background:linear-gradient(90deg,transparent,var(--gold),transparent);border-radius:4px;opacity:.7}
+  .hero-sub{margin-top:20px;font-size:clamp(18px,2.4vw,21px);color:rgba(251,246,236,.86);max-width:520px}
+  .hero-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+  .hero-cta .btn{min-height:58px;padding:0 30px;font-size:17px}
+  .chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px;padding:0;list-style:none}
+  .chip{display:inline-flex;align-items:center;gap:8px;background:rgba(251,246,236,.08);border:1px solid rgba(251,246,236,.2);color:var(--cream);padding:9px 14px;border-radius:999px;font-size:14px;font-weight:600}
+  .chip svg{width:16px;height:16px;flex:none}
+  .chip .stars{color:var(--gold);letter-spacing:1px}
+  .hero-art{position:relative;max-width:440px;width:100%;margin:0 auto}
+  .arch{position:relative;aspect-ratio:4/5;border-radius:220px 220px 28px 28px;overflow:hidden;background:linear-gradient(170deg,#F7D98A 0%,#E8A812 35%,#B8740A 100%);box-shadow:var(--shadow-lg);border:6px solid rgba(251,246,236,.12)}
+  .arch svg{position:absolute;inset:0;width:100%;height:100%}
+  .float-card{position:absolute;display:flex;align-items:center;gap:12px;background:var(--white);color:var(--ink);border-radius:18px;padding:12px 16px;box-shadow:var(--shadow-lg);font-size:14px;line-height:1.3}
+  .float-card b{display:block;font-size:15px;color:var(--green)}
+  .float-card .dot{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;flex:none}
+  .fc-1{left:-12px;bottom:56px;animation:bob 6s ease-in-out infinite}
+  .fc-2{right:-8px;top:40px;animation:bob 6s ease-in-out -3s infinite}
+  .fc-1 .dot{background:#E7F3EE;color:var(--green-3)}
+  .fc-2 .dot{background:#FDF1D3;color:var(--gold-ink)}
+  .live{display:inline-block;width:8px;height:8px;border-radius:50%;background:#2BB673;margin-right:6px;box-shadow:0 0 0 0 rgba(43,182,115,.6);animation:ping 2s infinite}
+  @keyframes bob{50%{transform:translateY(-8px)}}
+  @keyframes ping{70%{box-shadow:0 0 0 8px rgba(43,182,115,0)}100%{box-shadow:0 0 0 0 rgba(43,182,115,0)}}
+  @media (min-width:880px){.hero{padding:80px 0 100px}.hero .wrap{grid-template-columns:1.15fr .85fr}.fc-1{left:-48px}.fc-2{right:-36px}}
+
+  /* ---------- Services ---------- */
+  .services-grid{display:grid;gap:18px}
+  @media (min-width:640px){.services-grid{grid-template-columns:1fr 1fr}}
+  @media (min-width:1040px){.services-grid{grid-template-columns:repeat(4,1fr)}}
+  .card{position:relative;background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:26px 22px 22px;box-shadow:var(--shadow-sm);transition:transform .35s var(--ease),box-shadow .35s var(--ease),border-color .35s;display:flex;flex-direction:column}
+  .card:hover{transform:translateY(-6px);box-shadow:var(--shadow);border-color:rgba(232,168,18,.55)}
+  .card::before{content:"";position:absolute;left:22px;right:22px;top:0;height:3px;border-radius:0 0 4px 4px;background:linear-gradient(90deg,var(--gold),var(--gold-soft));transform:scaleX(.25);transform-origin:left;transition:transform .4s var(--ease)}
+  .card:hover::before{transform:scaleX(1)}
+  .card-icon{width:58px;height:58px;border-radius:16px;background:var(--green);color:var(--gold);display:grid;place-items:center;margin-bottom:18px;transition:transform .35s var(--ease)}
+  .card:hover .card-icon{transform:rotate(-6deg) scale(1.05)}
+  .card-icon svg{width:30px;height:30px}
+  .card h3{font-size:25px;color:var(--green)}
+  .card .tag{font-size:14px;color:var(--ink-2);margin-top:6px}
+  .svc-list{list-style:none;margin:18px 0 20px;padding:0;flex:1}
+  .svc-list li{display:flex;align-items:center;gap:10px;padding:11px 0;border-top:1px dashed var(--line);font-weight:600;font-size:16px}
+  .svc-list li::before{content:"";width:7px;height:7px;transform:rotate(45deg);background:var(--gold);border-radius:1px;flex:none}
+  .card-link{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:50px;padding:0 18px;border-radius:14px;border:0;background:var(--cream-2);color:var(--green);font-weight:700;cursor:pointer;transition:background .25s,color .25s}
+  .card-link:hover{background:var(--green);color:var(--cream)}
+  .card-link span{transition:transform .25s}
+  .card-link:hover span{transform:translateX(4px)}
+  .note{margin-top:28px;display:flex;gap:12px;align-items:flex-start;background:var(--cream-2);border-radius:16px;padding:16px 18px;color:var(--ink-2);font-size:15px}
+  .note svg{width:22px;height:22px;flex:none;color:var(--gold-ink);margin-top:1px}
+
+  /* ---------- Before / After ---------- */
+  .ba-section{background:var(--cream-2)}
+  .ba-layout{display:grid;gap:36px;align-items:center}
+  @media (min-width:880px){.ba-layout{grid-template-columns:.9fr 1.1fr}}
+  .ba{position:relative;aspect-ratio:5/6;max-height:640px;width:100%;border-radius:26px;overflow:hidden;box-shadow:var(--shadow-lg);cursor:ew-resize;user-select:none;-webkit-user-select:none;touch-action:pan-y;--pos:50%;background:#ddd}
+  .ba-layer{position:absolute;inset:0}
+  .ba-layer svg{width:100%;height:100%}
+  .ba-before{clip-path:inset(0 calc(100% - var(--pos)) 0 0)}
+  .ba-label{position:absolute;top:18px;padding:8px 14px;border-radius:999px;font-size:13px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;pointer-events:none}
+  .ba-before .ba-label{left:18px;background:rgba(21,33,27,.75);color:#fff}
+  .ba-after .ba-label{right:18px;background:var(--gold);color:var(--green)}
+  .ba-handle{position:absolute;top:0;bottom:0;left:var(--pos);width:0;pointer-events:none}
+  .ba-handle::before{content:"";position:absolute;top:0;bottom:0;left:-1.5px;width:3px;background:#fff;box-shadow:0 0 12px rgba(0,0,0,.35)}
+  .ba-knob{position:absolute;top:50%;left:0;width:60px;height:60px;transform:translate(-50%,-50%);border-radius:50%;background:#fff;color:var(--green);display:grid;place-items:center;box-shadow:0 8px 24px rgba(0,0,0,.3);border:3px solid var(--gold);transition:transform .2s var(--ease)}
+  .ba.dragging .ba-knob{transform:translate(-50%,-50%) scale(1.1)}
+  .ba-knob svg{width:28px;height:28px}
+  .ba:focus-visible{outline:4px solid var(--gold);outline-offset:4px}
+  .ba-points{list-style:none;padding:0;margin:26px 0 0;display:grid;gap:12px}
+  .ba-points li{display:flex;gap:12px;align-items:flex-start;font-weight:600}
+  .ba-points li svg{width:24px;height:24px;flex:none;color:var(--green-3)}
+  .hint{display:inline-flex;align-items:center;gap:8px;margin-top:14px;font-size:14px;color:var(--ink-2);font-weight:600}
+
+  /* ---------- Gallery ---------- */
+  .gallery{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media (min-width:880px){.gallery{grid-template-columns:repeat(3,1fr);gap:18px}}
+  .tile{position:relative;aspect-ratio:4/5;border-radius:20px;overflow:hidden;box-shadow:var(--shadow-sm);transition:box-shadow .4s var(--ease),transform .4s var(--ease);isolation:isolate}
+  .tile:hover{box-shadow:var(--shadow);transform:translateY(-4px)}
+  .tile-art{position:absolute;inset:0;transition:transform .7s var(--ease)}
+  .tile:hover .tile-art{transform:scale(1.07)}
+  .tile-art svg{width:100%;height:100%}
+  .tile::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(8,26,20,.78));z-index:1}
+  .tile figcaption{position:absolute;left:14px;right:14px;bottom:14px;z-index:2;color:#fff}
+  .tile figcaption b{display:block;font-family:var(--serif);font-size:clamp(19px,3.6vw,26px);font-weight:600;line-height:1.15}
+  .tile figcaption span{font-size:13px;font-weight:600;color:var(--gold-soft);letter-spacing:.04em}
+  .t1{background:linear-gradient(160deg,#C88E4E,#6B3C1E 55%,#2A160B)}
+  .t2{background:linear-gradient(160deg,#2F7A5F,#0E3B2E 70%)}
+  .t3{background:linear-gradient(160deg,#F6D3C9,#D98C8E 60%,#A85466)}
+  .t4{background:linear-gradient(160deg,#B4475F,#6A1F33 55%,#33101B)}
+  .t5{background:linear-gradient(160deg,#6E5524,#2B2418 60%,#141210)}
+  .t6{background:linear-gradient(160deg,#FBEFE2,#EBCDB2 60%,#D2A586)}
+
+  /* ---------- Automation ---------- */
+  .auto{position:relative;overflow:hidden;color:var(--cream);background:
+      radial-gradient(800px 400px at 100% 0%,rgba(232,168,18,.18),transparent 60%),
+      linear-gradient(180deg,var(--green),#0A2D23)}
+  .auto .section-head h2{color:var(--cream)}
+  .auto .section-head p{color:rgba(251,246,236,.82)}
+  .auto .eyebrow{color:var(--gold-soft)}
+  .phones{display:grid;gap:40px}
+  @media (min-width:880px){.phones{grid-template-columns:1fr 1fr;gap:48px}}
+  .phone-block{display:flex;flex-direction:column;align-items:center;text-align:center}
+  .phone{width:100%;max-width:330px;background:#0B0F0D;border-radius:44px;padding:12px;box-shadow:var(--shadow-lg),inset 0 0 0 2px rgba(255,255,255,.08)}
+  .screen{background:#F4F1EA;border-radius:34px;overflow:hidden;min-height:440px;display:flex;flex-direction:column;color:var(--ink)}
+  .sbar{display:flex;justify-content:space-between;align-items:center;padding:12px 24px 4px;font-size:13px;font-weight:700}
+  .sbar i{display:inline-block;width:24px;height:11px;border:1.5px solid currentColor;border-radius:3px;position:relative;font-style:normal}
+  .sbar i::after{content:"";position:absolute;inset:1.5px;right:5px;background:currentColor;border-radius:1px}
+  .chat-head{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 16px 12px;border-bottom:1px solid rgba(0,0,0,.08);background:rgba(255,255,255,.7)}
+  .avatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:15px;color:#fff}
+  .av-green{background:linear-gradient(135deg,var(--green-3),var(--green))}
+  .av-gold{background:linear-gradient(135deg,var(--gold-soft),var(--gold));color:var(--green)}
+  .chat-head b{font-size:13px}
+  .chat-head small{font-size:11px;color:#6b726e}
+  .chat{padding:16px 14px 20px;display:flex;flex-direction:column;gap:8px;text-align:left;font-size:15px;line-height:1.4;flex:1}
+  .chat .time{text-align:center;font-size:11px;color:#7d837f;font-weight:600;margin:4px 0}
+  .bubble{max-width:84%;padding:10px 14px;border-radius:20px;opacity:0;transform:translateY(10px) scale(.97);transition:opacity .5s var(--ease),transform .5s var(--ease)}
+  .bubble.in-msg{align-self:flex-start;background:#E4E2DC;border-bottom-left-radius:6px}
+  .bubble.out-msg{align-self:flex-end;background:var(--green);color:#fff;border-bottom-right-radius:6px}
+  .bubble .hl{font-weight:700;color:var(--gold-soft)}
+  .in-msg .hl{color:var(--green)}
+  .bubble .link{text-decoration:underline;font-weight:600}
+  .meta{font-size:11px;color:#6b726e;font-weight:600;opacity:0;transition:opacity .5s}
+  .meta.r{align-self:flex-end}
+  .auto-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--gold-ink);background:#FDF1D3;border-radius:999px;padding:3px 9px;align-self:flex-end;opacity:0;transition:opacity .5s}
+  .typing{align-self:flex-end;background:var(--green);border-radius:20px;border-bottom-right-radius:6px;padding:12px 14px;display:none;gap:4px;overflow:hidden;max-height:40px}
+  .typing span{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.75);animation:blink 1.2s infinite}
+  .typing span:nth-child(2){animation-delay:.15s}.typing span:nth-child(3){animation-delay:.3s}
+  .typing.in{align-self:flex-start;background:#E4E2DC}
+  .typing.in span{background:#8b908c}
+  @keyframes blink{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
+  .play .s1{opacity:1;transform:none;transition-delay:.2s}
+  .play .typing{display:flex;animation:typingShow 1.5s .9s both}
+  .play .s2{opacity:1;transform:none;transition-delay:2.4s}
+  .play .s2m{opacity:1;transition-delay:2.6s}
+  .play .s3{opacity:1;transform:none;transition-delay:3.6s}
+  .play .s3m{opacity:1;transition-delay:3.8s}
+  @keyframes typingShow{0%{opacity:0}10%{opacity:1}90%{opacity:1}100%{opacity:0;max-height:0;padding-top:0;padding-bottom:0;margin:-4px 0}}
+  .phone-caption{margin-top:26px;max-width:380px}
+  .phone-caption .step{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:var(--gold);color:var(--green);font-weight:800;margin-bottom:10px}
+  .phone-caption h3{font-size:28px;color:var(--cream)}
+  .phone-caption p{margin-top:10px;color:rgba(251,246,236,.84)}
+  .auto-cta{margin-top:56px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+  .auto-cta p{color:rgba(251,246,236,.8);font-size:15px}
+
+  /* ---------- Reviews ---------- */
+  .reviews{display:grid;gap:18px}
+  @media (min-width:880px){.reviews{grid-template-columns:repeat(3,1fr)}}
+  .review{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:28px 24px;position:relative;box-shadow:var(--shadow-sm);transition:transform .35s var(--ease),box-shadow .35s var(--ease)}
+  .review:hover{transform:translateY(-5px);box-shadow:var(--shadow)}
+  .review .q{position:absolute;right:20px;top:4px;font-family:var(--serif);font-size:90px;line-height:1;color:var(--cream-3)}
+  .review .stars{color:var(--gold);font-size:19px;letter-spacing:2px}
+  .review blockquote{margin:14px 0 20px;font-family:var(--serif);font-size:21px;line-height:1.4;color:var(--ink)}
+  .reviewer{display:flex;align-items:center;gap:12px;font-weight:700}
+  .reviewer small{display:block;font-weight:500;color:var(--ink-2);font-size:13px}
+  .rating-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px 16px;margin-top:32px;font-weight:600;color:var(--ink-2)}
+  .rating-bar b{font-family:var(--serif);font-size:34px;color:var(--green)}
+
+  /* ---------- Footer ---------- */
+  .footer{background:#0A2C22;color:rgba(251,246,236,.86);padding:72px 0 0}
+  .footer-grid{display:grid;gap:40px}
+  @media (min-width:880px){.footer-grid{grid-template-columns:1.1fr 1fr 1fr}}
+  .footer h3{font-size:24px;color:var(--cream);margin-bottom:16px}
+  .footer .logo{color:var(--cream)}
+  .footer .logo-mark{background:var(--gold)}
+  .footer .logo-mark svg path{fill:var(--green)}
+  .footer .logo-text small{color:var(--gold-soft)}
+  .contact-list{list-style:none;padding:0;margin:0;display:grid;gap:6px}
+  .contact-list a,.contact-list div{display:flex;align-items:center;gap:12px;min-height:48px;text-decoration:none;color:var(--cream);font-weight:600}
+  .contact-list a:hover{color:var(--gold-soft)}
+  .contact-list svg{width:20px;height:20px;color:var(--gold);flex:none}
+  .hours{width:100%;border-collapse:collapse;font-size:16px}
+  .hours th,.hours td{padding:11px 0;border-bottom:1px solid rgba(251,246,236,.12);text-align:left;font-weight:500}
+  .hours td{text-align:right;color:var(--cream);font-weight:600}
+  .hours tr.today th,.hours tr.today td{color:var(--gold-soft)}
+  .hours tr.today th::after{content:"Today";margin-left:8px;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;background:var(--gold);color:var(--green);padding:2px 8px;border-radius:999px;vertical-align:2px}
+  .mini-map{margin-top:18px;border-radius:16px;overflow:hidden;border:1px solid rgba(251,246,236,.14)}
+  .footer-bottom{margin-top:56px;border-top:1px solid rgba(251,246,236,.12);padding:22px 0;font-size:14px;color:rgba(251,246,236,.6);display:flex;flex-wrap:wrap;gap:8px 20px;justify-content:space-between}
+  .demo-strip{background:var(--gold);color:var(--green);text-align:center;padding:16px 20px calc(16px + env(safe-area-inset-bottom));font-size:14px;font-weight:600;line-height:1.5}
+  .demo-strip b{font-weight:800}
+
+  /* ---------- Mobile sticky book bar ---------- */
+  .book-bar{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:40;display:flex;align-items:center;gap:12px;background:var(--green);color:var(--cream);border-radius:20px;padding:10px 10px 10px 18px;box-shadow:var(--shadow-lg);transform:translateY(140%);transition:transform .4s var(--ease)}
+  .book-bar.show{transform:none}
+  .book-bar div{flex:1;font-size:13px;line-height:1.3}
+  .book-bar div b{display:block;font-size:15px}
+  .book-bar .btn{min-height:50px;padding:0 22px}
+  @media (min-width:880px){.book-bar{display:none}}
+
+  /* ---------- Modal ---------- */
+  .modal{position:fixed;inset:0;z-index:100;display:flex;align-items:flex-end;justify-content:center;visibility:hidden;pointer-events:none}
+  .modal.open{visibility:visible;pointer-events:auto}
+  .modal-backdrop{position:absolute;inset:0;background:rgba(6,22,17,.6);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);opacity:0;transition:opacity .3s}
+  .modal.open .modal-backdrop{opacity:1}
+  .sheet{position:relative;width:100%;max-width:480px;max-height:94vh;max-height:94dvh;overflow:auto;background:var(--cream);border-radius:28px 28px 0 0;padding:14px 22px calc(26px + env(safe-area-inset-bottom));transform:translateY(100%);transition:transform .4s var(--ease);box-shadow:var(--shadow-lg);overscroll-behavior:contain}
+  .modal.open .sheet{transform:none}
+  @media (min-width:640px){.modal{align-items:center;padding:20px}.sheet{border-radius:28px;padding:26px 30px 28px;transform:translateY(30px) scale(.97);opacity:0;transition:transform .35s var(--ease),opacity .3s}.modal.open .sheet{opacity:1}}
+  .grabber{width:44px;height:5px;border-radius:5px;background:var(--cream-3);margin:0 auto 14px}
+  @media (min-width:640px){.grabber{display:none}}
+  .close{position:absolute;top:14px;right:14px;width:44px;height:44px;border-radius:50%;border:0;background:var(--cream-2);cursor:pointer;display:grid;place-items:center;transition:background .2s,transform .2s}
+  .close:hover{background:var(--cream-3);transform:rotate(90deg)}
+  .close svg{width:18px;height:18px}
+  .sheet h2{font-size:32px;color:var(--green);padding-right:48px}
+  .sheet .sub{color:var(--ink-2);margin-top:6px;font-size:16px}
+  .field{display:block;margin-top:18px}
+  .field label{display:block;font-weight:700;font-size:15px;margin-bottom:7px;color:var(--green)}
+  .field input,.field select{width:100%;min-height:56px;border-radius:14px;border:2px solid var(--cream-3);background:var(--white);padding:0 16px;font:inherit;font-size:17px;color:var(--ink);transition:border-color .2s,box-shadow .2s;-webkit-appearance:none;appearance:none}
+  .field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230E3B2E' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;background-size:20px;padding-right:44px}
+  .field input:focus,.field select:focus{outline:none;border-color:var(--green-3);box-shadow:0 0 0 4px rgba(30,107,84,.15)}
+  .field.err input,.field.err select{border-color:#C0392B}
+  .field .msg{display:none;color:#B03022;font-size:14px;font-weight:600;margin-top:6px}
+  .field.err .msg{display:block}
+  .sheet form .btn{width:100%;margin-top:24px;min-height:58px;font-size:17px}
+  .fine{margin-top:14px;text-align:center;font-size:13px;color:var(--ink-2);display:flex;align-items:center;justify-content:center;gap:6px}
+  .fine svg{width:14px;height:14px}
+  .success{display:none;text-align:center}
+  .sheet.done form{display:none}
+  .sheet.done .success{display:block}
+  .check{width:72px;height:72px;margin:6px auto 14px;border-radius:50%;background:var(--green);display:grid;place-items:center;animation:pop .5s var(--ease) both}
+  .check svg{width:36px;height:36px;color:var(--gold)}
+  .check path{stroke-dasharray:30;stroke-dashoffset:30;animation:draw .5s .3s ease forwards}
+  @keyframes pop{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  .sms{margin:20px auto 0;max-width:340px;background:#F4F1EA;border:1px solid var(--cream-3);border-radius:24px;overflow:hidden;text-align:left;box-shadow:var(--shadow)}
+  .sms-head{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--white);border-bottom:1px solid rgba(0,0,0,.06)}
+  .sms-head .avatar{width:36px;height:36px;font-size:13px}
+  .sms-head b{display:block;font-size:14px}
+  .sms-head small{font-size:12px;color:#5d6560}
+  .sms-body{padding:14px;display:flex;flex-direction:column;gap:6px;font-size:15px;line-height:1.45}
+  .sms-body .typing{display:flex;align-self:flex-start;background:#E4E2DC}
+  .sms-body .typing span{background:#8b908c}
+  .sms-body .bubble{opacity:1;transform:none;display:none;max-width:92%}
+  .sms-body.sent .typing{display:none}
+  .sms-body.sent .bubble{display:block;animation:pop .4s var(--ease) both}
+  .sms-body .meta{opacity:1;display:none}
+  .sms-body.sent .meta{display:block}
+  .success .row{display:flex;gap:10px;margin-top:22px}
+  .success .row .btn{flex:1;min-height:52px}
+  .btn-outline{background:transparent;border:2px solid var(--cream-3);color:var(--green)}
+  .btn-outline:hover{border-color:var(--green)}
+
+  /* ---------- Reveal ---------- */
+  .js .reveal{opacity:0;transform:translateY(26px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+  .js .reveal.in{opacity:1;transform:none}
+  .js .reveal.d1{transition-delay:.08s}.js .reveal.d2{transition-delay:.16s}.js .reveal.d3{transition-delay:.24s}.js .reveal.d4{transition-delay:.32s}.js .reveal.d5{transition-delay:.4s}
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;transition-delay:0s!important}
+    .js .reveal{opacity:1;transform:none}
+  }
+  body.locked{overflow:hidden}
+</style>
+</head>
+<body>
+<script>document.documentElement.classList.add('js')</script>
+
+<!-- Shared SVG symbols -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 1.5l2.4 7.1 7.1 2.4-7.1 2.4L12 20.5l-2.4-7.1L2.5 11l7.1-2.4z" fill="currentColor"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="17" rx="3"/><path d="M8 2.5v4M16 2.5v4M3 10h18M8 14.5h2M14 14.5h2M8 18h2"/></symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z" fill="currentColor"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-6.2 7-12a7 7 0 10-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.6"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1.9.4 1.8.7 2.7a2 2 0 01-.5 2.1L8 9.8a16 16 0 006 6l1.3-1.3a2 2 0 012.1-.5c.9.3 1.8.6 2.7.7a2 2 0 011.7 2z"/></symbol>
+  <symbol id="i-msg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8.5 8.5 0 01-12.6 7.4L3 21l1.6-5.2A8.5 8.5 0 1121 12z"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" stroke-width="2"/><path d="M7.5 12.5l3 3 6-6.5"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 11v6M12 7.5v.5"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10.5" width="16" height="11" rx="2.5"/><path d="M8 10.5V7a4 4 0 018 0v3.5"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6.5V12l3.5 2"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 2.5l2.9 6 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.2 1.3-6.6L2.5 9.3l6.6-.8z" fill="currentColor"/></symbol>
+</svg>
+
+<!-- ============ HEADER ============ -->
+<header class="header" id="top">
+  <div class="wrap">
+    <a href="#top" class="logo" aria-label="Glow Studio Regina — home">
+      <span class="logo-mark"><svg viewBox="0 0 24 24"><path d="M12 1.5l2.4 7.1 7.1 2.4-7.1 2.4L12 20.5l-2.4-7.1L2.5 11l7.1-2.4z" fill="#E8A812"/></svg></span>
+      <span class="logo-text">Glow Studio<small>REGINA</small></span>
+    </a>
+    <nav class="nav" aria-label="Main">
+      <a href="#services">Services</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#reviews">Reviews</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <div class="header-actions">
+      <button class="btn btn-gold" data-book>Book Now</button>
+      <button class="menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav"><span></span></button>
+    </div>
+  </div>
+</header>
+<nav class="mobile-nav" id="mobile-nav" aria-label="Mobile">
+  <a href="#services">Services</a>
+  <a href="#gallery">Gallery</a>
+  <a href="#reviews">Reviews</a>
+  <a href="#contact">Contact</a>
+</nav>
+
+<main>
+<!-- ============ HERO ============ -->
+<section class="hero" aria-labelledby="hero-title">
+  <div class="wrap">
+    <div>
+      <span class="hero-kicker reveal"><svg width="14" height="14"><use href="#i-spark"/></svg> Hair · Braids · Nails · Lashes</span>
+      <h1 id="hero-title" class="reveal d1">Walk in ordinary. Walk out <em>glowing.</em></h1>
+      <p class="hero-sub reveal d2">Downtown Regina's studio for silk presses, protective styles, flawless nails and lashes — booked in under a minute.</p>
+      <div class="hero-cta reveal d3">
+        <button class="btn btn-gold" data-book><svg><use href="#i-cal"/></svg> Book Now</button>
+        <a class="btn btn-ghost" href="#services">See services</a>
+      </div>
+      <ul class="chips reveal d4" aria-label="Why clients choose us">
+        <li class="chip"><span class="stars" aria-hidden="true">★★★★★</span> 4.9 rating</li>
+        <li class="chip"><svg style="color:var(--gold)"><use href="#i-bolt"/></svg> Replies instantly</li>
+        <li class="chip"><svg style="color:var(--gold)"><use href="#i-pin"/></svg> Downtown Regina</li>
+      </ul>
+    </div>
+
+    <div class="hero-art reveal d2" aria-hidden="true">
+      <div class="arch">
+        <svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMax slice">
+          <defs>
+            <radialGradient id="h-glow" cx="50%" cy="38%" r="55%"><stop offset="0" stop-color="#FFF4D2" stop-opacity=".9"/><stop offset="1" stop-color="#FFF4D2" stop-opacity="0"/></radialGradient>
+            <linearGradient id="h-hair" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#2A1A12"/><stop offset=".5" stop-color="#140B07"/><stop offset="1" stop-color="#2A1A12"/></linearGradient>
+            <linearGradient id="h-skin" x1="0" x2="1"><stop offset="0" stop-color="#8E5A3A"/><stop offset="1" stop-color="#6E4128"/></linearGradient>
+          </defs>
+          <circle cx="200" cy="190" r="190" fill="url(#h-glow)"/>
+          <path d="M40 500 C55 420 120 388 200 388 C280 388 345 420 360 500 Z" fill="#0E3B2E"/>
+          <path d="M120 230 C108 130 152 96 200 96 C248 96 292 130 280 230 L300 450 C262 466 138 466 100 450 Z" fill="url(#h-hair)"/>
+          <rect x="176" y="280" width="48" height="112" rx="22" fill="#6A3E26"/>
+          <ellipse cx="200" cy="218" rx="64" ry="82" fill="url(#h-skin)"/>
+          <path d="M134 206 C130 136 164 108 200 108 C236 108 270 136 266 206 C252 168 226 146 204 142 C186 150 156 168 134 206 Z" fill="url(#h-hair)"/>
+          <path d="M146 250 C140 320 132 380 118 440" stroke="#E8C27A" stroke-opacity=".55" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <path d="M258 250 C262 320 272 380 284 440" stroke="#E8C27A" stroke-opacity=".4" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <path d="M170 120 C190 112 214 112 236 122" stroke="#F4CF6A" stroke-opacity=".55" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <g fill="#FFF8E6"><path d="M318 110l5 14 14 5-14 5-5 14-5-14-14-5 14-5z"/><path d="M78 170l3 9 9 3-9 3-3 9-3-9-9-3 9-3z" opacity=".8"/><path d="M330 260l3 8 8 3-8 3-3 8-3-8-8-3 8-3z" opacity=".7"/></g>
+        </svg>
+      </div>
+      <div class="float-card fc-1"><span class="dot"><svg width="20" height="20"><use href="#i-cal"/></svg></span><div><b><span class="live"></span>New booking</b>Amara · Knotless Braids</div></div>
+      <div class="float-card fc-2"><span class="dot"><svg width="20" height="20"><use href="#i-star"/></svg></span><div><b>5.0 ★ review</b>"Best silk press ever"</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SERVICES ============ -->
+<section class="section" id="services" aria-labelledby="services-title">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Our services</span>
+      <h2 id="services-title">Everything you need to glow</h2>
+      <p>Skilled hands, premium products and a calm, beautiful studio. Pick a service and book in seconds.</p>
+    </div>
+    <div class="services-grid">
+      <article class="card reveal d1">
+        <div class="card-icon"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 28V14C9 8 12 4 16 4s7 4 7 10v14"/><path d="M13 28V15M16 28V12M19 28V15"/></svg></div>
+        <h3>Hair &amp; Silk Press</h3>
+        <p class="tag">Sleek, bouncy, healthy shine.</p>
+        <ul class="svc-list"><li>Signature Silk Press</li><li>Wash &amp; Blowout</li><li>Trim &amp; Shape</li><li>Deep Conditioning Treatment</li></ul>
+        <button class="card-link" data-book data-service="Signature Silk Press">Book hair <span>→</span></button>
+      </article>
+      <article class="card reveal d2">
+        <div class="card-icon"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3c-4 3 4 5 0 8s4 5 0 8 4 5 0 8"/><path d="M20 3c4 3-4 5 0 8s-4 5 0 8-4 5 0 8"/></svg></div>
+        <h3>Braids &amp; Protective Styles</h3>
+        <p class="tag">Neat, lightweight, long-lasting.</p>
+        <ul class="svc-list"><li>Knotless Braids</li><li>Passion Twists</li><li>Feed-in Cornrows</li><li>Loc Retwist &amp; Style</li></ul>
+        <button class="card-link" data-book data-service="Knotless Braids">Book braids <span>→</span></button>
+      </article>
+      <article class="card reveal d3">
+        <div class="card-icon"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="13" y="3" width="6" height="8" rx="1.5"/><path d="M11 11h10a3 3 0 013 3v11a3 3 0 01-3 3H11a3 3 0 01-3-3V14a3 3 0 013-3z"/><path d="M12 17h8"/></svg></div>
+        <h3>Nails</h3>
+        <p class="tag">Clean prep, flawless finish.</p>
+        <ul class="svc-list"><li>Gel-X Extensions</li><li>Classic French Tips</li><li>Gel Manicure</li><li>Spa Pedicure</li></ul>
+        <button class="card-link" data-book data-service="Gel-X Extensions">Book nails <span>→</span></button>
+      </article>
+      <article class="card reveal d4">
+        <div class="card-icon"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 15c6 7 18 7 24 0"/><path d="M8 18.5l-2 4M12.5 20.5l-1 4.5M16 21v4.5M19.5 20.5l1 4.5M24 18.5l2 4"/><path d="M8 9c4-2.5 12-2.5 16 0"/></svg></div>
+        <h3>Lashes &amp; Brows</h3>
+        <p class="tag">Effortless, wake-up-ready.</p>
+        <ul class="svc-list"><li>Volume Lash Extensions</li><li>Classic Lash Set</li><li>Brow Lamination</li><li>Brow Shape &amp; Tint</li></ul>
+        <button class="card-link" data-book data-service="Volume Lash Extensions">Book lashes <span>→</span></button>
+      </article>
+    </div>
+    <p class="note reveal"><svg><use href="#i-info"/></svg><span>Every look is personal. Send a booking request and we'll reply instantly with availability and a personalised quote for your hair length, style and add-ons.</span></p>
+  </div>
+</section>
+
+<!-- ============ BEFORE / AFTER ============ -->
+<section class="section ba-section" aria-labelledby="ba-title">
+  <div class="wrap ba-layout">
+    <div class="reveal">
+      <span class="eyebrow">The transformation</span>
+      <div class="section-head" style="margin-bottom:0">
+        <h2 id="ba-title">See the glow-up for yourself</h2>
+        <p>Drag the slider to compare. Our signature silk press takes dry, frizzy texture to glossy, swingy movement — without heat damage.</p>
+      </div>
+      <ul class="ba-points">
+        <li><svg><use href="#i-check"/></svg> Heat-protect treatment on every service</li>
+        <li><svg><use href="#i-check"/></svg> Lasts up to 2 weeks with our aftercare tips</li>
+        <li><svg><use href="#i-check"/></svg> Personal consultation before we start</li>
+      </ul>
+    </div>
+
+    <div class="reveal d2">
+      <div class="ba" id="ba" tabindex="0" role="slider" aria-label="Before and after comparison" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" aria-valuetext="50% before">
+        <!-- AFTER (base layer) -->
+        <div class="ba-layer ba-after">
+          <svg viewBox="0 0 400 480" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <defs>
+              <linearGradient id="a-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F6D98C"/><stop offset=".55" stop-color="#E8A812"/><stop offset="1" stop-color="#9C6508"/></linearGradient>
+              <radialGradient id="a-glow" cx="50%" cy="40%" r="50%"><stop offset="0" stop-color="#FFF7DD" stop-opacity=".95"/><stop offset="1" stop-color="#FFF7DD" stop-opacity="0"/></radialGradient>
+              <linearGradient id="a-hair" x1="0" x2="1"><stop offset="0" stop-color="#2B1A10"/><stop offset=".45" stop-color="#120905"/><stop offset=".8" stop-color="#2F1D12"/><stop offset="1" stop-color="#160B06"/></linearGradient>
+              <linearGradient id="a-skin" x1="0" x2="1"><stop offset="0" stop-color="#97603E"/><stop offset="1" stop-color="#734429"/></linearGradient>
+            </defs>
+            <rect width="400" height="480" fill="url(#a-bg)"/>
+            <circle cx="200" cy="200" r="200" fill="url(#a-glow)"/>
+            <path d="M50 480 C62 408 126 376 200 376 C274 376 338 408 350 480 Z" fill="#0E3B2E"/>
+            <path d="M120 220 C108 124 152 90 200 90 C248 90 292 124 280 220 L302 452 C262 470 138 470 98 452 Z" fill="url(#a-hair)"/>
+            <rect x="176" y="270" width="48" height="112" rx="22" fill="#6E4128"/>
+            <ellipse cx="200" cy="208" rx="64" ry="82" fill="url(#a-skin)"/>
+            <path d="M134 196 C130 128 164 100 200 100 C236 100 270 128 266 196 C252 158 226 136 206 132 C188 140 156 158 134 196 Z" fill="url(#a-hair)"/>
+            <g stroke-linecap="round" fill="none">
+              <path d="M144 240 C138 310 130 380 116 446" stroke="#F4CF6A" stroke-opacity=".65" stroke-width="6"/>
+              <path d="M132 250 C126 320 118 384 106 440" stroke="#F4CF6A" stroke-opacity=".3" stroke-width="3"/>
+              <path d="M258 240 C264 310 272 380 286 446" stroke="#F4CF6A" stroke-opacity=".5" stroke-width="5"/>
+              <path d="M172 112 C192 104 218 104 240 116" stroke="#FCE3A0" stroke-opacity=".7" stroke-width="5"/>
+            </g>
+            <g fill="#FFFBEF"><path d="M322 96l6 16 16 6-16 6-6 16-6-16-16-6 16-6z"/><path d="M74 150l4 10 10 4-10 4-4 10-4-10-10-4 10-4z" opacity=".85"/><path d="M334 278l3 9 9 3-9 3-3 9-3-9-9-3 9-3z" opacity=".75"/></g>
+          </svg>
+          <span class="ba-label">After</span>
+        </div>
+        <!-- BEFORE (clipped top layer) -->
+        <div class="ba-layer ba-before">
+          <svg viewBox="0 0 400 480" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <defs>
+              <linearGradient id="b-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#D9D4CB"/><stop offset="1" stop-color="#A9A39A"/></linearGradient>
+            </defs>
+            <rect width="400" height="480" fill="url(#b-bg)"/>
+            <path d="M50 480 C62 408 126 376 200 376 C274 376 338 408 350 480 Z" fill="#7C7F7B"/>
+            <g fill="#4B3F37"><circle cx="117" cy="242" r="40"/><circle cx="109" cy="217" r="47"/><circle cx="108" cy="190" r="54"/><circle cx="114" cy="164" r="40"/><circle cx="126" cy="141" r="47"/><circle cx="143" cy="122" r="54"/><circle cx="164" cy="108" r="40"/><circle cx="188" cy="101" r="47"/><circle cx="212" cy="101" r="54"/><circle cx="236" cy="108" r="40"/><circle cx="257" cy="122" r="47"/><circle cx="274" cy="141" r="54"/><circle cx="286" cy="164" r="40"/><circle cx="292" cy="190" r="47"/><circle cx="291" cy="217" r="54"/><circle cx="283" cy="242" r="40"/><circle cx="200" cy="180" r="100"/></g>
+            <g stroke="#5E5148" stroke-width="2.5" fill="none" stroke-linecap="round" opacity=".9">
+              <path d="M60 180 q-10 -8 -4 -18"/><path d="M70 120 q-12 -2 -12 -14"/><path d="M110 64 q-6 -10 2 -18"/><path d="M200 40 q-4 -12 6 -16"/><path d="M290 62 q8 -8 2 -18"/><path d="M336 120 q12 -4 12 -14"/><path d="M344 190 q10 -6 6 -18"/><path d="M58 250 q-12 0 -14 10"/><path d="M342 250 q12 2 14 12"/>
+            </g>
+            <rect x="176" y="270" width="48" height="112" rx="22" fill="#76503A"/>
+            <ellipse cx="200" cy="208" rx="64" ry="82" fill="#83583E"/>
+            <path d="M136 168 C150 130 180 118 200 122 C226 118 254 134 264 168 C246 150 226 142 200 144 C176 142 154 150 136 168 Z" fill="#4B3F37"/>
+          </svg>
+          <span class="ba-label">Before</span>
+        </div>
+        <div class="ba-handle"><span class="ba-knob"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l-6 6 6 6M15 6l6 6-6 6"/></svg></span></div>
+      </div>
+      <p class="hint"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M9 8l-4 4 4 4M15 8l4 4-4 4"/></svg> Drag the handle to compare</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ GALLERY ============ -->
+<section class="section" id="gallery" aria-labelledby="gallery-title">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Gallery</span>
+      <h2 id="gallery-title">Fresh from the chair</h2>
+      <p>A few of this month's favourite looks. Follow along for new sets every week.</p>
+    </div>
+    <div class="gallery">
+      <figure class="tile reveal d1" style="margin:0">
+        <div class="tile-art t1"><svg viewBox="0 0 200 250" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g fill="none" stroke="#FCE3A0" stroke-linecap="round"><path d="M40 -10 C70 70 20 150 55 260" stroke-opacity=".35" stroke-width="3"/><path d="M70 -10 C100 70 50 150 85 260" stroke-opacity=".5" stroke-width="5"/><path d="M100 -10 C130 70 80 150 115 260" stroke-opacity=".3" stroke-width="3"/><path d="M130 -10 C160 70 110 150 145 260" stroke-opacity=".45" stroke-width="4"/><path d="M160 -10 C190 70 140 150 175 260" stroke-opacity=".25" stroke-width="3"/></g><circle cx="150" cy="50" r="40" fill="#FFF1C9" opacity=".18"/></svg></div>
+        <figcaption><b>Silk Press</b><span>Hair</span></figcaption>
+      </figure>
+      <figure class="tile reveal d2" style="margin:0">
+        <div class="tile-art t2"><svg viewBox="0 0 200 250" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><pattern id="braid" width="28" height="30" patternUnits="userSpaceOnUse"><g fill="none" stroke="#E8A812" stroke-width="2.5" stroke-opacity=".65"><ellipse cx="10" cy="8" rx="8" ry="5" transform="rotate(35 10 8)"/><ellipse cx="18" cy="23" rx="8" ry="5" transform="rotate(-35 18 23)"/></g></pattern></defs><rect width="200" height="250" fill="url(#braid)"/><rect width="200" height="250" fill="url(#braid)" transform="translate(14 15)" opacity=".4"/></svg></div>
+        <figcaption><b>Knotless Braids</b><span>Protective styles</span></figcaption>
+      </figure>
+      <figure class="tile reveal d3" style="margin:0">
+        <div class="tile-art t3"><svg viewBox="0 0 200 250" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="gx" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF4F1"/><stop offset="1" stop-color="#E9A2A7"/></linearGradient></defs><g transform="translate(100 210)"><g fill="url(#gx)" stroke="#fff" stroke-opacity=".7" stroke-width="1.5"><path d="M-14 0 C-14 -50 -6 -78 0 -78 C6 -78 14 -50 14 0 Z" transform="rotate(-40) translate(0 -40)"/><path d="M-14 0 C-14 -50 -6 -78 0 -78 C6 -78 14 -50 14 0 Z" transform="rotate(-20) translate(0 -50)"/><path d="M-14 0 C-14 -50 -6 -78 0 -78 C6 -78 14 -50 14 0 Z" transform="translate(0 -56)"/><path d="M-14 0 C-14 -50 -6 -78 0 -78 C6 -78 14 -50 14 0 Z" transform="rotate(20) translate(0 -50)"/><path d="M-14 0 C-14 -50 -6 -78 0 -78 C6 -78 14 -50 14 0 Z" transform="rotate(40) translate(0 -40)"/></g></g><g fill="#fff"><circle cx="40" cy="40" r="2"/><circle cx="160" cy="30" r="3"/><circle cx="170" cy="90" r="1.6"/></g></svg></div>
+        <figcaption><b>Gel-X Nails</b><span>Nails</span></figcaption>
+      </figure>
+      <figure class="tile reveal d1" style="margin:0">
+        <div class="tile-art t4"><svg viewBox="0 0 200 250" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g fill="none" stroke="#F7C1CB" stroke-linecap="round" stroke-width="3"><path d="M30 -10 q14 10 0 20 q-14 10 0 20 q14 10 0 20 q-14 10 0 20 q14 10 0 20 q-14 10 0 20 q14 10 0 20 q-14 10 0 20 q14 10 0 20 q-14 10 0 20 q14 10 0 20 q-14 10 0 20 q14 10 0 20 q-14 10 0 20" stroke-opacity=".45"/><path d="M70 -20 q14 10 0 20 q-14 10 0 20 q14 10 0 20 q-14 10 0 20 q14 10 0 20 q-14 10 0 20 q14 10 0 20 q-14 10 0 20 q14 10 0 20 q-14 10 0 20 q14 10 0 20 q-14 10 0 20 q14 10 0 20 q-14 10 0 20" stroke-opacity=".6"/><path d="M110 -5 q14 10 0 20 q-14 10 0 20 q14 10 0 20 q-14 10 0 20 q14 10 0 20 q-14 10 0 20 q14 10 0 20 q-14 10 0 20 q14 10 0 20 q-14 10 0 20 q14 10 0 20 q-14 10 0 20 q14 10 0 20 q-14 10 0 20" stroke-opacity=".4"/><path d="M150 -15 q14 10 0 20 q-14 10 0 20 q14 10 0 20 q-14 10 0 20 q14 10 0 20 q-14 10 0 20 q14 10 0 20 q-14 10 0 20 q14 10 0 20 q-14 10 0 20 q14 10 0 20 q-14 10 0 20 q14 10 0 20 q-14 10 0 20" stroke-opacity=".55"/><path d="M190 -10 q14 10 0 20 q-14 10 0 20 q14 10 0 20 q-14 10 0 20 q14 10 0 20 q-14 10 0 20 q14 10 0 20 q-14 10 0 20 q14 10 0 20 q-14 10 0 20 q14 10 0 20 q-14 10 0 20 q14 10 0 20 q-14 10 0 20" stroke-opacity=".35"/></g></svg></div>
+        <figcaption><b>Passion Twists</b><span>Protective styles</span></figcaption>
+      </figure>
+      <figure class="tile reveal d2" style="margin:0">
+        <div class="tile-art t5"><svg viewBox="0 0 200 250" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><circle cx="100" cy="110" r="80" fill="#E8A812" opacity=".12"/><g transform="translate(0 50)" fill="none" stroke="#F4CF6A" stroke-linecap="round"><path d="M40 60 Q100 100 160 60" stroke-width="4"/><path d="M52 67 L32 91M64 73 L49 97M76 77 L66 101M88 79 L83 103M100 80 L100 104M112 79 L117 103M124 77 L134 101M136 73 L151 97M148 67 L168 91" stroke-width="2.5"/><path d="M50 18 Q100 -4 150 18" stroke-width="5" stroke-opacity=".7"/></g></svg></div>
+        <figcaption><b>Volume Lashes</b><span>Lashes &amp; brows</span></figcaption>
+      </figure>
+      <figure class="tile reveal d3" style="margin:0">
+        <div class="tile-art t6"><svg viewBox="0 0 200 250" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><clipPath id="ft-clip"><path d="M-16 0 C-16 -56 -7 -86 0 -86 C7 -86 16 -56 16 0 Z"/></clipPath></defs><g transform="translate(100 220)"><g transform="rotate(-24) translate(-26 -40)"><g clip-path="url(#ft-clip)"><rect x="-20" y="-90" width="40" height="92" fill="#F0C6B6"/><rect x="-20" y="-90" width="40" height="22" fill="#fff"/></g></g><g transform="translate(0 -56)"><g clip-path="url(#ft-clip)"><rect x="-20" y="-90" width="40" height="92" fill="#F0C6B6"/><rect x="-20" y="-90" width="40" height="22" fill="#fff"/></g></g><g transform="rotate(24) translate(26 -40)"><g clip-path="url(#ft-clip)"><rect x="-20" y="-90" width="40" height="92" fill="#F0C6B6"/><rect x="-20" y="-90" width="40" height="22" fill="#fff"/></g></g></g><g fill="#fff"><circle cx="34" cy="50" r="2.5"/><circle cx="168" cy="40" r="2"/></g></svg></div>
+        <figcaption><b>French Tips</b><span>Nails</span></figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============ NEVER MISS A CUSTOMER ============ -->
+<section class="section auto" aria-labelledby="auto-title">
+  <div class="wrap">
+    <div class="section-head center reveal">
+      <span class="eyebrow">Never miss a customer</span>
+      <h2 id="auto-title">Your front desk, working 24/7</h2>
+      <p>While you're busy with a client, Glow Studio's booking assistant answers new enquiries and grows your reviews automatically.</p>
+    </div>
+
+    <div class="phones">
+      <div class="phone-block reveal d1">
+        <div class="phone" data-play>
+          <div class="screen">
+            <div class="sbar"><span>9:41</span><i></i></div>
+            <div class="chat-head"><span class="avatar av-gold">A</span><b>Amara</b><small>New enquiry · via website</small></div>
+            <div class="chat">
+              <div class="time">Sat 9:41 PM</div>
+              <div class="bubble in-msg s1">Hi! Do you have anything open next Saturday for knotless braids? 🙏</div>
+              <div class="typing"><span></span><span></span><span></span></div>
+              <div class="bubble out-msg s2">Hi <span class="hl">Amara</span>! 💛 Thanks for reaching out to Glow Studio. We'd love to do your <span class="hl">Knotless Braids</span>. Saturday has openings at 10 AM &amp; 1 PM — tap to grab one: <span class="link">glowstudio.ca/book</span></div>
+              <div class="auto-badge s2m"><svg width="11" height="11"><use href="#i-bolt"/></svg> Auto-reply · sent in 3 sec</div>
+              <div class="bubble in-msg s3">Omg perfect, booking 1 PM now!</div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-caption">
+          <span class="step">1</span>
+          <h3>Instant, personal replies</h3>
+          <p>Every new enquiry gets a reply in seconds — with their name and the service they asked about — even at 9 PM on a Saturday. No more losing bookings to the salon that texted back first.</p>
+        </div>
+      </div>
+
+      <div class="phone-block reveal d2">
+        <div class="phone" data-play>
+          <div class="screen">
+            <div class="sbar"><span>4:12</span><i></i></div>
+            <div class="chat-head"><span class="avatar av-green">G</span><b>Glow Studio Regina</b><small>Text message</small></div>
+            <div class="chat">
+              <div class="time">Today 4:12 PM · 2 hrs after appointment</div>
+              <div class="typing in"><span></span><span></span><span></span></div>
+              <div class="bubble in-msg s1">Hi Jasmine, thank you for coming in today! ✨ Hope you're loving your <span class="hl">Silk Press</span>.</div>
+              <div class="bubble in-msg s2">Would you leave us a quick Google review? It takes 30 seconds and means the world to our small team 💛<br><span class="link">g.page/glowstudio-regina</span></div>
+              <div class="meta s2m">Sent automatically</div>
+              <div class="bubble out-msg s3">Just left 5 stars! Obsessed with my hair 😍</div>
+              <div class="meta r s3m">Delivered</div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-caption">
+          <span class="step">2</span>
+          <h3>Reviews on autopilot</h3>
+          <p>A friendly review request goes out automatically after every appointment, while the client is still smiling. More 5-star reviews means you show up higher when people search "salon near me".</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="auto-cta reveal">
+      <button class="btn btn-gold" data-book><svg><use href="#i-msg"/></svg> Try it — book a demo appointment</button>
+      <p>See the instant confirmation text for yourself.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ REVIEWS ============ -->
+<section class="section" id="reviews" aria-labelledby="reviews-title">
+  <div class="wrap">
+    <div class="section-head center reveal">
+      <span class="eyebrow">Reviews</span>
+      <h2 id="reviews-title">Loved across Regina</h2>
+    </div>
+    <div class="reviews">
+      <figure class="review reveal d1" style="margin:0">
+        <span class="q" aria-hidden="true">“</span>
+        <div class="stars" aria-label="5 out of 5 stars">★★★★★</div>
+        <blockquote>Best silk press I've had in Regina. Bouncy, shiny, and it lasted two full weeks. I booked my next one before I left.</blockquote>
+        <figcaption class="reviewer"><span class="avatar av-green">J</span><span>Jasmine<small>Silk Press</small></span></figcaption>
+      </figure>
+      <figure class="review reveal d2" style="margin:0">
+        <span class="q" aria-hidden="true">“</span>
+        <div class="stars" aria-label="5 out of 5 stars">★★★★★</div>
+        <blockquote>They texted me back in literally seconds and fit me in that weekend. My knotless braids are so neat and light.</blockquote>
+        <figcaption class="reviewer"><span class="avatar av-gold">A</span><span>Amara<small>Knotless Braids</small></span></figcaption>
+      </figure>
+      <figure class="review reveal d3" style="margin:0">
+        <span class="q" aria-hidden="true">“</span>
+        <div class="stars" aria-label="5 out of 5 stars">★★★★★</div>
+        <blockquote>My Gel-X set is perfect and the studio is gorgeous. Booking took me thirty seconds on my phone.</blockquote>
+        <figcaption class="reviewer"><span class="avatar av-green">C</span><span>Chloe<small>Gel-X Nails</small></span></figcaption>
+      </figure>
+    </div>
+    <div class="rating-bar reveal"><b>4.9</b><span class="stars" style="color:var(--gold);font-size:22px;letter-spacing:2px" aria-hidden="true">★★★★★</span><span>Average rating from our clients</span></div>
+  </div>
+</section>
+</main>
+
+<!-- ============ FOOTER / CONTACT ============ -->
+<footer class="footer" id="contact">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="reveal">
+        <a href="#top" class="logo" aria-label="Back to top">
+          <span class="logo-mark"><svg viewBox="0 0 24 24"><path d="M12 1.5l2.4 7.1 7.1 2.4-7.1 2.4L12 20.5l-2.4-7.1L2.5 11l7.1-2.4z" fill="#E8A812"/></svg></span>
+          <span class="logo-text">Glow Studio<small>REGINA</small></span>
+        </a>
+        <p style="margin-top:18px;max-width:340px">A calm, beautiful studio in the heart of downtown Regina. Hair, braids, nails and lashes — done with care.</p>
+        <button class="btn btn-gold" data-book style="margin-top:22px">Book Now</button>
+      </div>
+      <div class="reveal d1">
+        <h3>Visit us</h3>
+        <ul class="contact-list">
+          <li><div><svg><use href="#i-pin"/></svg> 1234 Victoria Ave, Regina, SK</div></li>
+          <li><a href="tel:+13065550142"><svg><use href="#i-phone"/></svg> (306) 555-0142</a></li>
+          <li><a href="#" data-book><svg><use href="#i-msg"/></svg> Text to book — we reply instantly</a></li>
+        </ul>
+        <div class="mini-map" aria-hidden="true">
+          <svg viewBox="0 0 320 140" style="width:100%;height:auto;display:block"><rect width="320" height="140" fill="#123F32"/><g stroke="#1E5A48" stroke-width="10"><path d="M0 40H320M0 100H320M70 0V140M170 0V140M260 0V140"/></g><g stroke="#2A6E58" stroke-width="2"><path d="M0 70H320M120 0V140M215 0V140"/></g><rect x="180" y="8" width="70" height="24" rx="4" fill="#1A5543"/><text x="10" y="35" font-family="system-ui,sans-serif" font-size="10" fill="#9DBCB0" font-weight="600">VICTORIA AVE</text><g transform="translate(170 72)"><circle r="22" fill="#E8A812" opacity=".22"/><path d="M0 8 C-8 -2 -12 -6 -12 -12 a12 12 0 0124 0 c0 6 -4 10 -12 20z" fill="#E8A812" transform="translate(0 -10)"/><circle cy="-22" r="4.5" fill="#0E3B2E"/></g></svg>
+        </div>
+      </div>
+      <div class="reveal d2">
+        <h3>Hours</h3>
+        <table class="hours" id="hours">
+          <tbody>
+            <tr data-day="1"><th scope="row">Monday</th><td>Closed</td></tr>
+            <tr data-day="2"><th scope="row">Tuesday</th><td>10 AM – 7 PM</td></tr>
+            <tr data-day="3"><th scope="row">Wednesday</th><td>10 AM – 7 PM</td></tr>
+            <tr data-day="4"><th scope="row">Thursday</th><td>10 AM – 8 PM</td></tr>
+            <tr data-day="5"><th scope="row">Friday</th><td>10 AM – 8 PM</td></tr>
+            <tr data-day="6"><th scope="row">Saturday</th><td>9 AM – 6 PM</td></tr>
+            <tr data-day="0"><th scope="row">Sunday</th><td>11 AM – 4 PM</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span id="year">2026</span> Glow Studio Regina</span>
+      <span>Online booking · Instant replies · Downtown Regina</span>
+    </div>
+  </div>
+  <div class="demo-strip"><b>Demo website by QC Clips</b> — Glow Studio Regina is a sample business created to show what's possible.</div>
+</footer>
+
+<!-- Mobile sticky booking bar -->
+<div class="book-bar" id="book-bar" aria-hidden="true">
+  <div><b>Ready to glow?</b>We reply instantly.</div>
+  <button class="btn btn-gold" data-book tabindex="-1">Book Now</button>
+</div>
+
+<!-- ============ BOOKING MODAL ============ -->
+<div class="modal" id="modal" aria-hidden="true">
+  <div class="modal-backdrop" data-close></div>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="modal-title" id="sheet">
+    <div class="grabber"></div>
+    <button class="close" data-close aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+
+    <form id="book-form" novalidate>
+      <h2 id="modal-title">Book your glow</h2>
+      <p class="sub">Takes 30 seconds. We'll text you right away.</p>
+      <div class="field" id="f-name">
+        <label for="name">Your first name</label>
+        <input id="name" name="name" type="text" autocomplete="given-name" placeholder="e.g. Amara" maxlength="40" required>
+        <p class="msg">Please enter your name.</p>
+      </div>
+      <div class="field" id="f-service">
+        <label for="service">Service</label>
+        <select id="service" name="service" required>
+          <option value="">Choose a service…</option>
+          <optgroup label="Hair &amp; Silk Press"><option>Signature Silk Press</option><option>Wash &amp; Blowout</option><option>Trim &amp; Shape</option><option>Deep Conditioning Treatment</option></optgroup>
+          <optgroup label="Braids &amp; Protective Styles"><option>Knotless Braids</option><option>Passion Twists</option><option>Feed-in Cornrows</option><option>Loc Retwist &amp; Style</option></optgroup>
+          <optgroup label="Nails"><option>Gel-X Extensions</option><option>Classic French Tips</option><option>Gel Manicure</option><option>Spa Pedicure</option></optgroup>
+          <optgroup label="Lashes &amp; Brows"><option>Volume Lash Extensions</option><option>Classic Lash Set</option><option>Brow Lamination</option><option>Brow Shape &amp; Tint</option></optgroup>
+        </select>
+        <p class="msg">Please pick a service.</p>
+      </div>
+      <div class="field" id="f-phone">
+        <label for="phone">Mobile number</label>
+        <input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="(306) 555-0123" required>
+        <p class="msg">Please enter a 10-digit phone number.</p>
+      </div>
+      <button class="btn btn-gold" type="submit">Request my appointment</button>
+      <p class="fine"><svg><use href="#i-lock"/></svg> Demo only — nothing is sent.</p>
+    </form>
+
+    <div class="success" aria-live="polite">
+      <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+      <h2 style="padding:0">You're on the books, <span id="s-name">friend</span>!</h2>
+      <p class="sub">Here's the text that lands on your phone seconds later:</p>
+      <div class="sms">
+        <div class="sms-head"><span class="avatar av-green">G</span><span><b>Glow Studio Regina</b><small>To: <span id="s-phone"></span></small></span></div>
+        <div class="sms-body" id="sms-body">
+          <div class="time" style="text-align:center;font-size:11px;color:#7d837f;font-weight:600">Text Message · Now</div>
+          <div class="typing"><span></span><span></span><span></span></div>
+          <div class="bubble in-msg" id="s-msg"></div>
+          <div class="meta">Sent automatically by Glow Studio</div>
+        </div>
+      </div>
+      <div class="row">
+        <button class="btn btn-outline" type="button" id="again">Book another</button>
+        <button class="btn btn-green" type="button" data-close>Done</button>
+      </div>
+      <p class="fine"><svg><use href="#i-lock"/></svg> Demo only — nothing is sent.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* Header shadow + mobile booking bar */
+  var header = document.querySelector('.header');
+  var bar = document.getElementById('book-bar');
+  var hero = document.querySelector('.hero');
+  var footer = document.querySelector('.footer');
+  function onScroll(){
+    var y = window.scrollY;
+    header.classList.toggle('scrolled', y > 8);
+    var pastHero = y > hero.offsetHeight - 80;
+    var nearFooter = footer.getBoundingClientRect().top < window.innerHeight - 40;
+    bar.classList.toggle('show', pastHero && !nearFooter);
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  /* Mobile menu */
+  var menuBtn = document.querySelector('.menu-btn');
+  function setMenu(open){
+    document.body.classList.toggle('menu-open', open);
+    menuBtn.setAttribute('aria-expanded', open);
+    menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  }
+  menuBtn.addEventListener('click', function(){ setMenu(!document.body.classList.contains('menu-open')); });
+  document.querySelectorAll('.mobile-nav a').forEach(function(a){ a.addEventListener('click', function(){ setMenu(false); }); });
+
+  /* Reveal on scroll */
+  var reveals = document.querySelectorAll('.reveal');
+  var plays = document.querySelectorAll('[data-play]');
+  if ('IntersectionObserver' in window && !reduce){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, {threshold:.12, rootMargin:'0px 0px -40px 0px'});
+    reveals.forEach(function(el){ io.observe(el); });
+    var pio = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){ e.target.classList.add('play'); pio.unobserve(e.target); }
+      });
+    }, {threshold:.35});
+    plays.forEach(function(el){ pio.observe(el); });
+  } else {
+    reveals.forEach(function(el){ el.classList.add('in'); });
+    plays.forEach(function(el){ el.classList.add('play'); });
+  }
+
+  /* Before / After slider */
+  var ba = document.getElementById('ba');
+  var pos = 50, dragging = false;
+  function setPos(p){
+    pos = Math.max(0, Math.min(100, p));
+    ba.style.setProperty('--pos', pos + '%');
+    ba.setAttribute('aria-valuenow', Math.round(pos));
+    ba.setAttribute('aria-valuetext', Math.round(pos) + '% before');
+  }
+  function fromEvent(e){
+    var r = ba.getBoundingClientRect();
+    setPos((e.clientX - r.left) / r.width * 100);
+  }
+  ba.addEventListener('pointerdown', function(e){
+    dragging = true; ba.classList.add('dragging');
+    ba.setPointerCapture && ba.setPointerCapture(e.pointerId);
+    fromEvent(e);
+  });
+  ba.addEventListener('pointermove', function(e){ if (dragging) fromEvent(e); });
+  ['pointerup','pointercancel','lostpointercapture'].forEach(function(t){
+    ba.addEventListener(t, function(){ dragging = false; ba.classList.remove('dragging'); });
+  });
+  ba.addEventListener('keydown', function(e){
+    var step = e.shiftKey ? 10 : 4;
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowDown'){ setPos(pos - step); e.preventDefault(); }
+    else if (e.key === 'ArrowRight' || e.key === 'ArrowUp'){ setPos(pos + step); e.preventDefault(); }
+    else if (e.key === 'Home'){ setPos(0); e.preventDefault(); }
+    else if (e.key === 'End'){ setPos(100); e.preventDefault(); }
+  });
+  /* A gentle one-time "peek" so visitors know it moves */
+  if ('IntersectionObserver' in window && !reduce){
+    var hinted = false;
+    new IntersectionObserver(function(entries, obs){
+      if (!entries[0].isIntersecting || hinted) return;
+      hinted = true; obs.disconnect();
+      var keys = [[0,50],[700,72],[1400,30],[2000,50]], start = null;
+      function tick(t){
+        if (dragging) return;
+        if (!start) start = t;
+        var el = t - start;
+        for (var i = 1; i < keys.length; i++){
+          if (el <= keys[i][0]){
+            var a = keys[i-1], b = keys[i], k = (el - a[0]) / (b[0] - a[0]);
+            k = k < .5 ? 2*k*k : 1 - Math.pow(-2*k + 2, 2) / 2;
+            setPos(a[1] + (b[1] - a[1]) * k);
+            return requestAnimationFrame(tick);
+          }
+        }
+        setPos(50);
+      }
+      setTimeout(function(){ requestAnimationFrame(tick); }, 600);
+    }, {threshold:.6}).observe(ba);
+  }
+
+  /* Booking modal */
+  var modal = document.getElementById('modal');
+  var sheet = document.getElementById('sheet');
+  var form = document.getElementById('book-form');
+  var nameIn = document.getElementById('name');
+  var serviceIn = document.getElementById('service');
+  var phoneIn = document.getElementById('phone');
+  var smsBody = document.getElementById('sms-body');
+  var lastFocus = null, smsTimer = null;
+
+  function openModal(service){
+    lastFocus = document.activeElement;
+    setMenu(false);
+    resetForm(false);
+    if (service) serviceIn.value = service;
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('locked');
+    setTimeout(function(){ nameIn.focus({preventScroll:true}); }, 350);
+  }
+  function closeModal(){
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('locked');
+    clearTimeout(smsTimer);
+    if (lastFocus && lastFocus.focus) lastFocus.focus({preventScroll:true});
+  }
+  function resetForm(clear){
+    sheet.classList.remove('done');
+    smsBody.classList.remove('sent');
+    form.querySelectorAll('.field').forEach(function(f){ f.classList.remove('err'); });
+    if (clear) form.reset();
+  }
+  document.addEventListener('click', function(e){
+    var b = e.target.closest('[data-book]');
+    if (b){ e.preventDefault(); openModal(b.getAttribute('data-service')); return; }
+    if (e.target.closest('[data-close]') && modal.classList.contains('open')) closeModal();
+  });
+  document.addEventListener('keydown', function(e){
+    if (!modal.classList.contains('open')) return;
+    if (e.key === 'Escape') closeModal();
+    if (e.key === 'Tab'){
+      var f = Array.prototype.filter.call(sheet.querySelectorAll('button,input,select,a[href]'), function(el){ return el.offsetParent !== null; });
+      if (!f.length) return;
+      var first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first){ last.focus(); e.preventDefault(); }
+      else if (!e.shiftKey && document.activeElement === last){ first.focus(); e.preventDefault(); }
+    }
+  });
+
+  function digits(v){
+    var d = v.replace(/\D/g, '');
+    if (d.length === 11 && d.charAt(0) === '1') d = d.slice(1);
+    return d.slice(0, 10);
+  }
+  function fmt(d){
+    if (d.length < 4) return d.length ? '(' + d : '';
+    if (d.length < 7) return '(' + d.slice(0,3) + ') ' + d.slice(3);
+    return '(' + d.slice(0,3) + ') ' + d.slice(3,6) + '-' + d.slice(6);
+  }
+  phoneIn.addEventListener('input', function(e){
+    if (e.inputType && e.inputType.indexOf('delete') === 0) return; // let people backspace freely
+    phoneIn.value = fmt(digits(phoneIn.value));
+  });
+  [nameIn, serviceIn, phoneIn].forEach(function(el){
+    el.addEventListener('input', function(){ el.closest('.field').classList.remove('err'); });
+    el.addEventListener('change', function(){ el.closest('.field').classList.remove('err'); });
+  });
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var name = nameIn.value.trim();
+    var service = serviceIn.value;
+    var d = digits(phoneIn.value);
+    var ok = true, firstBad = null;
+    function check(cond, el){
+      el.closest('.field').classList.toggle('err', !cond);
+      if (!cond){ ok = false; firstBad = firstBad || el; }
+    }
+    check(name.length > 0, nameIn);
+    check(!!service, serviceIn);
+    check(d.length === 10, phoneIn);
+    if (!ok){ firstBad.focus(); return; }
+
+    var first = name.split(/\s+/)[0];
+    first = first.charAt(0).toUpperCase() + first.slice(1);
+    phoneIn.value = fmt(d);
+    document.getElementById('s-name').textContent = first;
+    document.getElementById('s-phone').textContent = fmt(d);
+
+    var msg = document.getElementById('s-msg');
+    msg.textContent = '';
+    msg.appendChild(document.createTextNode('Hi ' + first + '! ✨ Your '));
+    var b = document.createElement('b'); b.textContent = service; msg.appendChild(b);
+    msg.appendChild(document.createTextNode(' booking request at Glow Studio Regina is confirmed. We’ll text you shortly to lock in your exact time. Questions? Just reply here. See you soon! 💛'));
+
+    sheet.classList.add('done');
+    sheet.scrollTop = 0;
+    smsBody.classList.remove('sent');
+    smsTimer = setTimeout(function(){ smsBody.classList.add('sent'); }, reduce ? 0 : 1300);
+    sheet.querySelector('.success .btn-green').focus({preventScroll:true});
+  });
+  document.getElementById('again').addEventListener('click', function(){
+    resetForm(true);
+    nameIn.focus();
+  });
+
+  /* Hours: highlight today (Regina time) */
+  var day;
+  try { day = new Date(new Date().toLocaleString('en-US', {timeZone:'America/Regina'})).getDay(); }
+  catch(_) { day = new Date().getDay(); }
+  var row = document.querySelector('#hours tr[data-day="' + day + '"]');
+  if (row) row.classList.add('today');
+  document.getElementById('year').textContent = new Date().getFullYear();
+})();
+</script>
+</body>
+</html>
