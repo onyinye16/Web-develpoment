@@ -1,7 +1,7 @@
 {
-  "name": "Madame Claire — French Tutor",
-  "short_name": "Madame Claire",
-  "description": "Your AI French teacher: A2 to B2 in 60 days.",
+  "name": "Parle — French with a local",
+  "short_name": "Parle",
+  "description": "Talk every day with a French local. A2 to B2 in 60 days.",
   "start_url": "./#home",
   "scope": "./",
   "display": "standalone",

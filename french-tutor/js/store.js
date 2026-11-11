@@ -8,8 +8,13 @@ const defaults = () => ({
     model: "claude-opus-5-5",
     effort: "low",
     supportLang: "English",
-    voiceRate: 0.9,
+    voiceRate: 0.95,
     onboarded: false,
+    persona: "claire",
+    correctionMode: "live",   // live = corrected out loud; screen = only on screen
+    patience: "medium",       // how long a pause ends your turn in a call
+    voiceName: "",            // override the auto-picked French voice
+    autoSpeak: true,
   },
   progress: {
     startDate: new Date().toISOString().slice(0, 10),

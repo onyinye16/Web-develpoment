@@ -1,7 +1,8 @@
 import { WEEKS, GRAMMAR, VOCAB, QUIZ, READINGS, SENTENCES, DAILY_PLAN } from "./curriculum.js";
 import { store, save, today, addXP, markDaily, addMinutes, addWeakPoint, resetAll, cardState, reviewCard } from "./store.js";
 import { streamReply, askJSON, dayNumber, currentWeek, systemPrompt, QUIZ_SCHEMA, READING_SCHEMA, PLACEMENT_SCHEMA, WRITING_SCHEMA } from "./tutor.js";
-import { speak, stopSpeaking, listen, canListen, canSpeak, similarity, missedWords } from "./speech.js";
+import { speak, stopSpeaking, listen, canListen, canSpeak, similarity, missedWords, createSpeaker, unlockAudio, frenchVoices } from "./speech.js";
+import { PERSONAS, getPersona } from "./personas.js";
 
 const $ = (s, el = document) => el.querySelector(s);
 const view = $("#view");
@@ -28,6 +29,15 @@ const level = () => store.progress.level;
 const levelBucket = () => (level().startsWith("B2") ? "B2" : level().startsWith("B1") ? "B1" : "A2");
 const shuffle = (a) => a.map((v) => [Math.random(), v]).sort((x, y) => x[0] - y[0]).map((x) => x[1]);
 const needsKey = () => !store.settings.apiKey;
+const me = () => getPersona(store.settings.persona);
+const isCorr = (l) => /^\s*(✏️|💡)/u.test(l);
+// AI message: corrections in a highlighted box, the rest as text.
+function renderAI(text) {
+  const lines = text.split("\n");
+  const corr = lines.filter(isCorr);
+  const rest = lines.filter((l) => !isCorr(l)).join("\n").trim();
+  return (corr.length ? `<div class="corr">${corr.map(esc).join("<br>")}</div>` : "") + md(rest);
+}
 const keyNotice = () => `<div class="notice">🔑 The AI tutor needs your Anthropic API key. <a href="#settings">Add it in Settings</a>. Offline exercises still work.</div>`;
 
 document.addEventListener("click", (e) => {
@@ -48,9 +58,12 @@ setInterval(() => {
 const routes = {
   home: renderHome, learn: renderLearn, lesson: renderLesson, cards: renderCards, quiz: renderQuiz,
   speak: renderSpeak, read: renderRead, listen: renderListen, write: renderWrite, chat: renderChat,
-  progress: renderProgress, settings: renderSettings, placement: renderPlacement, more: renderMore,
+  progress: renderProgress, settings: renderSettings, placement: renderPlacement, more: renderMore, call: renderCall,
 };
+let cleanup = null;
 function route() {
+  cleanup?.(); cleanup = null;
+  document.body.classList.remove("in-call");
   stopSpeaking();
   const [name, arg] = (location.hash.slice(1) || "home").split("/");
   if (!store.settings.onboarded && name !== "settings" && name !== "placement") return renderWelcome();
@@ -66,14 +79,14 @@ function renderWelcome() {
   <section class="hero">
     <div class="flag">🇫🇷</div>
     <h1>Bonjour !</h1>
-    <p>I'm <b>Madame Claire</b>, your personal French teacher. Our goal: <b>A2 → B2 in 60 days</b>.</p>
+    <p>Learn French by <b>talking every day with real French locals</b>: Claire from Paris, Marius from Marseille, Léa from Lyon or Antoine from Bordeaux. Our goal: <b>A2 → B2 in 60 days</b>.</p>
   </section>
   <div class="card">
     <h3>How it works</h3>
     <ul class="checks">
       <li>📅 A 60-day plan: 8 weeks of grammar, vocabulary and themes</li>
       <li>🧠 Flashcards that repeat words right before you'd forget them</li>
-      <li>🗣️ Spoken conversations — I listen, correct and answer out loud</li>
+      <li>📞 Hands-free phone calls with a French local who listens, corrects you and answers out loud</li>
       <li>📖 Reading, 🎧 dictation and ✍️ writing with detailed corrections</li>
       <li>⏱️ About <b>2.5 hours a day</b> — that's what the fast track takes</li>
     </ul>
@@ -122,6 +135,10 @@ function renderHome() {
     <div><b>⏱️ ${mins}</b><span>min today</span></div>
   </div>
   <div class="progressbar"><div style="width:${Math.round((day / 60) * 100)}%"></div></div>
+  <a class="card call-card" href="#call" id="home-call">
+    <div class="avatar sm">${me().emoji}</div>
+    <div><b>📞 Call ${esc(me().name)}</b><br><span class="muted">${esc(me().tagline)} · ${esc(me().city)}</span></div>
+  </a>
   <div class="card accent">
     <p class="muted">This week · ${esc(wk.level)}</p>
     <h3>${esc(wk.title)}</h3>
@@ -137,6 +154,7 @@ function renderHome() {
   </div>
   ${needsKey() ? keyNotice() : ""}
   <div class="card tip"><b>💡 Astuce du jour :</b> ${esc(TIPS[day % TIPS.length])}</div>`;
+  $("#home-call").onclick = () => unlockAudio();
 }
 
 const TIPS = [
@@ -147,7 +165,7 @@ const TIPS = [
   "Watch French series with French subtitles (try 'Lupin', 'Dix pour cent', 'Call My Agent').",
   "Podcasts: 'InnerFrench', 'Français Authentique', 'Journal en français facile' (RFI).",
   "Think in French: describe what you're doing in your head.",
-  "Mistakes are data. Every correction from Madame Claire is a free lesson.",
+  "Mistakes are data. Every correction during your calls is a free lesson.",
   "Read news at your level: '1jour1actu' (easy), 'Le Monde' (B2).",
   "Write 5 sentences about your day every evening — then get them corrected.",
 ];
@@ -273,7 +291,7 @@ function renderQuiz(topic) {
   };
   const ai = async (what) => {
     if (needsKey()) return ($("#quiz").innerHTML = keyNotice());
-    $("#quiz").innerHTML = `<div class="card center"><div class="typing"></div><p class="muted">Madame Claire is writing your quiz…</p></div>`;
+    $("#quiz").innerHTML = `<div class="card center"><div class="typing"></div><p class="muted">Writing your quiz…</p></div>`;
     try {
       const data = await askJSON(`Create a 10-question multiple-choice French quiz about: ${what}. Level: ${level()} moving toward B2. Each question: a French sentence with a blank (___) or a short question, exactly 4 options, "answer" = index (0-3) of the correct option, and a one-sentence explanation in ${store.settings.supportLang}. Vary difficulty and include common learner traps.`, QUIZ_SCHEMA);
       runQuiz(data.questions.map((q) => ({ ...q, topic: what })));
@@ -318,37 +336,50 @@ function runQuiz(questions) {
 }
 
 // ---------- speaking ----------
-const SCENARIOS = [
-  ["☕ Au café", "You are a waiter in a Parisian café. Take my order, make small talk, and handle a small problem (wrong order)."],
-  ["🏠 Chercher un appartement", "You are a landlord. I am calling to visit an apartment. Ask and answer realistic questions."],
-  ["💼 Entretien d'embauche", "You are a recruiter conducting a job interview in French. Ask one question at a time, B1–B2 level."],
-  ["🩺 Chez le médecin", "You are a doctor. I'm a patient explaining symptoms. Ask follow-up questions."],
-  ["🗣️ Débat", "Lead a friendly debate with me on a current social topic of your choice. Challenge my arguments and make me justify them."],
-  ["🎓 DELF B2 oral", "Simulate the DELF B2 oral exam: give me a short article summary prompt, let me present my point of view, then ask probing examiner questions. At the end, grade me /25 with specific feedback."],
-  ["🧳 Raconter un voyage", "Ask me about my last trip and make me use passé composé and imparfait correctly."],
-  ["🎤 Défi de la semaine", null],
+// Topics for a call. `null` prompt = just chat as friends.
+const TOPICS = [
+  ["💬 Just chat", null],
+  ["🏙️ Life in their city", "Tell me about real everyday life in your city (prices, habits, neighbourhoods, food, what locals love and complain about) and compare with where I live. Teach me 2–3 local expressions."],
+  ["📅 My day", "Ask me about my day in detail and make me use the passé composé and imparfait correctly."],
+  ["☕ At the café", "Role-play: you are the waiter in your favourite café in your city. Take my order, make small talk, then there is a small problem with my order."],
+  ["🏠 Flat hunting", "Role-play: you are renting out a flat in your city. I'm calling to visit it. Ask and answer realistic questions (rent, charges, deposit, neighbourhood)."],
+  ["💼 Job interview", "Role-play: you are a recruiter in your city doing a job interview with me in French. One question at a time, B1–B2 level."],
+  ["🩺 At the doctor", "Role-play: I'm at the doctor (you play the doctor). I explain symptoms, you ask follow-up questions and give advice."],
+  ["🗣️ Debate", "Start a friendly debate on a current French social topic you care about. Give your real opinion as a local, challenge my arguments and make me justify them with connectors."],
+  ["🎓 DELF B2 oral", "Simulate the DELF B2 oral exam: present a short article topic in 2–3 sentences, let me give my point of view, then ask probing examiner questions. Stay friendly but rigorous. Keep each turn short (it's a call)."],
+  ["🎤 Weekly challenge", "WEEKLY"],
 ];
 
 function renderSpeak() {
+  const p = me();
   view.innerHTML = `
-  <h2>🗣️ Speaking</h2>
-  ${!canListen ? `<div class="notice">Your browser doesn't support speech recognition. Use Chrome (Android) or Safari (iPhone). You can still type.</div>` : ""}
+  <h2>🗣️ Speak</h2>
+  ${!canListen ? `<div class="notice">Your browser can't recognise speech. Use <b>Chrome on Android</b> or <b>Safari on iPhone</b>. You can still type in the Chat tab.</div>` : ""}
+  <div class="card call-hero">
+    <div class="avatar">${p.emoji}</div>
+    <h3>${esc(p.name)}, ${p.age} · ${esc(p.city)}</h3>
+    <p class="muted">${esc(p.tagline)}</p>
+    <a class="btn call-btn" href="#call/0" data-call>📞 Call ${esc(p.name)}</a>
+    <p class="muted small">Hands-free: just talk. ${esc(p.name)} listens, answers out loud and corrects you.</p>
+    <div class="persona-switch">${PERSONAS.map((x) => `<button class="chip ${x.id === p.id ? "on" : ""}" data-p="${x.id}">${x.emoji} ${esc(x.name)} · ${esc(x.city)}</button>`).join("")}</div>
+  </div>
+  <div class="card">
+    <h3>Call about…</h3>
+    <div class="scenarios">${TOPICS.map(([t], k) => `<a class="chip" href="#call/${k}" data-call>${esc(t)}</a>`).join("")}</div>
+  </div>
   <div class="card">
     <h3>Pronunciation drill</h3>
     <p class="muted">Listen, repeat, get a score.</p>
-    <button class="btn full" id="drill">Start drill (${levelBucket()})</button>
-  </div>
-  <div class="card">
-    <h3>Role-play conversation</h3>
-    <p class="muted">Talk with Madame Claire by voice. She corrects you and answers out loud.</p>
-    <div class="scenarios">${SCENARIOS.map(([t], k) => `<button class="chip" data-s="${k}">${esc(t)}</button>`).join("")}</div>
+    <button class="btn full ghost" id="drill">Start drill (${levelBucket()})</button>
   </div>
   <div id="speak-area"></div>`;
-  $("#drill").onclick = pronunciationDrill;
-  view.querySelectorAll("[data-s]").forEach((b) => (b.onclick = () => {
-    const [title, prompt] = SCENARIOS[+b.dataset.s];
-    voiceConversation(title, prompt || `Help me complete this week's speaking challenge: "${currentWeek().speaking}". Guide me step by step, ask questions to keep me talking, and give feedback at the end.`);
+  view.querySelectorAll("[data-call]").forEach((a) => (a.onclick = () => unlockAudio()));
+  view.querySelectorAll("[data-p]").forEach((b) => (b.onclick = () => {
+    if (store.settings.persona !== b.dataset.p) store.chat = [];
+    store.settings.persona = b.dataset.p; save(); renderSpeak();
+    speak(me().greeting.split(/(?<=[.!?])\s/)[0]);
   }));
+  $("#drill").onclick = pronunciationDrill;
 }
 
 function pronunciationDrill() {
@@ -389,72 +420,198 @@ function pronunciationDrill() {
   area.scrollIntoView({ behavior: "smooth" });
 }
 
-function voiceConversation(title, scenario) {
-  if (needsKey()) { $("#speak-area").innerHTML = keyNotice(); return; }
+// ---------- the phone call (hands-free conversation) ----------
+function renderCall(arg) {
+  const p = me();
+  if (needsKey()) { view.innerHTML = `<h2>📞 Call ${esc(p.name)}</h2>${keyNotice()}`; return; }
+  const [topicTitle, topicPrompt] = TOPICS[+arg] || TOPICS[0];
+  const scenario = topicPrompt === "WEEKLY"
+    ? `Help me with this week's speaking challenge: "${currentWeek().speaking}". Guide me, keep me talking, and give me feedback at the end.`
+    : topicPrompt;
+  const sys = systemPrompt(scenario ? `\nTOPIC OF THIS CALL: ${scenario}` : "\nTOPIC OF THIS CALL: just a friendly catch-up. Talk about anything — your life, the learner's life, plans, news, culture.", { call: true });
+
+  document.body.classList.add("in-call");
+  view.innerHTML = `
+  <div class="call">
+    <div class="call-top"><span>📞 <span id="timer">00:00</span></span><span>${esc(topicTitle)}</span></div>
+    <div class="avatar xl" id="avatar">${p.emoji}</div>
+    <h2 class="center">${esc(p.name)}</h2>
+    <p class="muted center">${esc(p.city)}</p>
+    <p class="status" id="status">Calling…</p>
+    <div class="live-text" id="live"></div>
+    <div class="convo call-convo" id="convo"></div>
+    <div class="call-controls">
+      <button class="ctl" id="c-repeat"><span>🔁</span>Repeat</button>
+      <button class="ctl" id="c-slow"><span>🐢</span>Slower</button>
+      <button class="mic big" id="c-mic" aria-label="Talk">🎙️</button>
+      <button class="ctl" id="c-help"><span>🆘</span>Help</button>
+      <button class="ctl hang" id="c-end"><span>📵</span>Hang up</button>
+    </div>
+  </div>`;
+
+  const convo = $("#convo"), live = $("#live"), status = $("#status"), avatar = $("#avatar"), mic = $("#c-mic");
+  const bubble = (role, html) => { const d = document.createElement("div"); d.className = "bubble " + role; d.innerHTML = html; convo.appendChild(d); d.scrollIntoView({ block: "end", behavior: "smooth" }); return d; };
   const msgs = [];
-  const sys = systemPrompt(`\nYou are now in a spoken role-play: ${scenario}\nThis is SPOKEN conversation: keep each reply to 1–3 short sentences, natural spoken French, no markdown headings. Put the correction block first (short), then your in-character reply.`);
-  const area = $("#speak-area");
-  area.innerHTML = `<div class="card">
-    <div class="row between"><h3>${esc(title)}</h3><button class="btn ghost small" id="end">End</button></div>
-    <div class="convo" id="convo"></div>
-    <div class="mic-row">
-      <input id="typed" placeholder="…or type here">
-      <button class="mic" id="mic" aria-label="Speak">🎙️</button>
-    </div></div>`;
-  area.scrollIntoView({ behavior: "smooth" });
-  const convo = $("#convo");
-  const bubble = (role, html) => { const d = document.createElement("div"); d.className = "bubble " + role; d.innerHTML = html; convo.appendChild(d); d.scrollIntoView({ block: "end" }); return d; };
+  let active = true, state = "idle", rec = null, speaker = null, misses = 0, skipResult = false, turns = 0, streaming = null;
+  const t0 = Date.now();
+  const timer = setInterval(() => {
+    const sec = Math.floor((Date.now() - t0) / 1000);
+    $("#timer") && ($("#timer").textContent = `${String(Math.floor(sec / 60)).padStart(2, "0")}:${String(sec % 60).padStart(2, "0")}`);
+  }, 1000);
 
-  const send = async (text) => {
-    if (text) { bubble("user", esc(text)); msgs.push({ role: "user", content: text }); store.progress.speakingTurns++; }
-    else msgs.push({ role: "user", content: "Start the role-play now. Greet me and ask the first question." });
+  const STATUS = {
+    thinking: `${p.name} réfléchit…`,
+    speaking: `${p.name} parle… (tap 🎙️ to interrupt)`,
+    listening: "À toi ! Je t'écoute… 🎙️",
+    paused: "Tap 🎙️ to talk",
+  };
+  const setState = (st, msg) => {
+    state = st;
+    avatar.className = "avatar xl " + st;
+    mic.classList.toggle("on", st === "listening");
+    status.textContent = msg || STATUS[st] || "";
+  };
+
+  const stopListening = () => { if (rec) { skipResult = true; rec.stop(); } };
+
+  async function aiTurn(userText) {
+    if (!active) return;
+    if (userText) { bubble("user", esc(userText)); msgs.push({ role: "user", content: userText }); turns++; store.progress.speakingTurns++; }
+    setState("thinking");
+    speaker = createSpeaker({ gender: p.gender });
     const b = bubble("ai", `<div class="typing"></div>`);
     let out = "";
     try {
-      const full = await streamReply(msgs, { system: sys, onText: (t) => { out += t; b.innerHTML = md(out); }, maxTokens: 2000 });
+      streaming = streamReply(msgs, {
+        system: sys, maxTokens: 1500,
+        onText: (t) => {
+          out += t;
+          b.innerHTML = renderAI(out);
+          if (!active) return;
+          speaker.push(t);
+          if (state === "thinking" && speaker.speaking) setState("speaking");
+        },
+      });
+      const full = await streaming;
       msgs.push({ role: "assistant", content: full });
-      b.insertAdjacentHTML("beforeend", speakBtn(full));
       addXP(3); markDaily("speak");
-      await speak(spokenPart(full));
-    } catch (e) { b.innerHTML = `<span class="error">${esc(e.message)}</span>`; msgs.pop(); }
+      if (!active || rec) return; // learner already interrupted and is talking
+      setState("speaking");
+      await speaker.end();
+    } catch (e) {
+      b.innerHTML = `<span class="error">${esc(e.message)}</span>`;
+      if (msgs[msgs.length - 1]?.role === "user") msgs.pop();
+      setState("paused", e.message + " — tap 🎙️ to try again");
+      return;
+    }
+    if (active) listenTurn();
+  }
+
+  async function listenTurn() {
+    if (!active || rec) return;
+    setState("listening");
+    live.textContent = "";
+    rec = listen({ patient: true, onInterim: (t) => (live.textContent = t) });
+    let said = "";
+    try { said = await rec.promise; }
+    catch (e) { rec = null; setState("paused", e.message); return; }
+    rec = null;
+    live.textContent = "";
+    if (skipResult) { skipResult = false; return; }
+    if (!active) return;
+    if (!said) {
+      if (++misses >= 2) { misses = 0; setState("paused", `${p.name} attend… tap 🎙️ when you're ready`); return; }
+      return listenTurn();
+    }
+    misses = 0;
+    if (streaming) await streaming.catch(() => {}); // keep turns in order
+    aiTurn(said);
+  }
+
+  mic.onclick = () => {
+    unlockAudio();
+    if (state === "speaking") {                                           // interrupt and talk
+      stopSpeaking();
+      setTimeout(() => { if (state === "speaking") listenTurn(); }, 300);
+    }
+    else if (state === "listening") rec?.stop();                          // "I'm done talking"
+    else if (state === "paused" || state === "idle") {
+      // Retry a failed turn if the last message is the learner's, else listen.
+      if (msgs[msgs.length - 1]?.role === "user") aiTurn(null); else listenTurn();
+    }
+  };
+  const lastAI = () => [...msgs].reverse().find((m) => m.role === "assistant")?.content || "";
+  const replay = async (rate) => {
+    if (state === "thinking") return;
+    stopListening(); speaker?.cancel();
+    setState("speaking");
+    await speak(lastAI(), { gender: p.gender, rate });
+    if (active) listenTurn();
+  };
+  $("#c-repeat").onclick = () => replay();
+  $("#c-slow").onclick = () => {
+    store.settings.voiceRate = Math.max(0.6, +(store.settings.voiceRate - 0.1).toFixed(2)); save();
+    toast(`Voice speed ${store.settings.voiceRate}`);
+    replay();
+  };
+  $("#c-help").onclick = () => {
+    if (state === "thinking") return;
+    stopListening(); speaker?.cancel();
+    msgs.push({ role: "user", content: `[I pressed HELP — I'm lost. Very briefly explain in ${store.settings.supportLang} what you just said, give me 2 simple French sentences I could answer with, then ask your question again in simpler French.]` });
+    bubble("user", "🆘 Help!");
+    aiTurn(null);
   };
 
-  let rec = null;
-  $("#mic").onclick = async () => {
-    if (rec) { rec.stop(); return; }
-    stopSpeaking();
-    const mic = $("#mic");
-    mic.classList.add("on");
-    const live = bubble("user live", "…");
-    rec = listen({ onInterim: (t) => (live.textContent = t) });
-    try {
-      const said = await rec.promise;
-      live.remove();
-      if (said) await send(said);
-    } catch (e) { live.innerHTML = `<span class="error">${esc(e.message)}</span>`; }
-    rec = null; mic.classList.remove("on");
+  const hangUp = () => {
+    active = false;
+    clearInterval(timer);
+    stopListening(); speaker?.cancel(); stopSpeaking();
+    document.body.classList.remove("in-call");
   };
-  $("#typed").onkeydown = (e) => { if (e.key === "Enter" && e.target.value.trim()) { const v = e.target.value.trim(); e.target.value = ""; send(v); } };
-  $("#end").onclick = async () => {
-    if (msgs.length < 2) { area.innerHTML = ""; return; }
-    const b = bubble("ai", `<div class="typing"></div>`);
+  cleanup = hangUp;
+
+  $("#c-end").onclick = async () => {
+    hangUp();
+    cleanup = null;
+    const mins = Math.max(1, Math.round((Date.now() - t0) / 60000));
+    const report = document.createElement("div");
+    view.innerHTML = `<h2>📵 Call ended · ${mins} min</h2>`;
+    view.appendChild(report);
+    speak(BYES[p.id] || "Allez, à bientôt !", { gender: p.gender });
+    if (turns < 2) {
+      report.innerHTML = `<div class="card"><p>Short call! Next time try to talk for at least 5 minutes.</p><a class="btn" href="#call/${+arg || 0}">📞 Call again</a></div>`;
+      return;
+    }
+    report.innerHTML = `<div class="card"><h3>Your feedback from ${esc(p.name)}</h3><div id="fb"><div class="typing"></div></div></div>
+      <div class="row"><a class="btn" href="#call/${+arg || 0}">📞 Call again</a><a class="btn ghost" href="#home">Home</a></div>`;
     let out = "";
     try {
-      await streamReply([...msgs, { role: "user", content: `End of role-play. In ${store.settings.supportLang}, give me feedback: overall level estimate, my 3 most important recurring mistakes with corrections, 5 useful expressions I should have used, and one sentence of encouragement. Then on the last line write "WEAK:" followed by my weak grammar points separated by semicolons.` }],
-        { system: sys, onText: (t) => { out += t; b.innerHTML = md(out.replace(/WEAK:.*$/s, "")); }, maxTokens: 3000 });
-      const weak = out.match(/WEAK:(.*)$/s);
-      if (weak) weak[1].split(";").map((s) => s.trim()).filter(Boolean).forEach(addWeakPoint);
-      addXP(15);
-    } catch (e) { b.innerHTML = `<span class="error">${esc(e.message)}</span>`; }
+      await streamReply([...msgs, { role: "user", content: `[The call is over. Out of character as a tutor, in ${store.settings.supportLang}, give me feedback: estimated level in this call, what I did well, my 3 most important recurring mistakes (wrong → right), 5 natural expressions a local would have used, and one line of encouragement from you. Then on the very last line write "WEAK:" followed by my weak grammar points separated by semicolons.]` }],
+        { system: systemPrompt(), maxTokens: 3000, onText: (t) => { out += t; $("#fb").innerHTML = md(out.replace(/WEAK:[\s\S]*$/, "")); } });
+      const weak = out.match(/WEAK:([\s\S]*)$/);
+      if (weak) weak[1].split(";").map((x) => x.trim()).filter(Boolean).forEach(addWeakPoint);
+      addXP(10 + mins * 2);
+    } catch (e) { $("#fb").innerHTML = `<p class="error">${esc(e.message)}</p>`; }
   };
-  send(null);
+
+  // Start the call.
+  if (!scenario) {
+    msgs.push({ role: "user", content: "[The phone call starts. Greet me.]" }, { role: "assistant", content: p.greeting });
+    bubble("ai", renderAI(p.greeting));
+    setState("speaking");
+    speak(p.greeting, { gender: p.gender }).then(() => active && listenTurn());
+  } else {
+    msgs.push({ role: "user", content: "[The phone call starts. Greet me in character and start the topic of this call.]" });
+    aiTurn(null);
+  }
 }
 
-// Speak the in-character reply, not the correction notes in the support language.
-function spokenPart(text) {
-  const lines = text.split("\n").filter((l) => !/^\s*(✏️|💡)/.test(l));
-  return lines.join(" ").replace(/✅\s*Parfait\s*!?/i, "Parfait !");
-}
+const BYES = {
+  claire: "Allez, je file ! Bisous, à demain !",
+  marius: "Allez, à la prochaine, hein ! Passe me voir à Marseille !",
+  lea: "Super conversation ! Bisous, à très vite !",
+  antoine: "Ce fut un plaisir. À bientôt, mon ami !",
+};
 
 // ---------- reading ----------
 function renderRead() {
@@ -584,10 +741,14 @@ function renderWrite() {
 }
 function sessionDraft() { try { return sessionStorage.getItem("draft") || ""; } catch { return ""; } }
 
-// ---------- free chat ----------
+// ---------- free chat (text or voice messages) ----------
 function renderChat() {
+  const p = me();
   view.innerHTML = `
-  <div class="row between"><h2>💬 Madame Claire</h2><button class="btn ghost small" id="clear">New chat</button></div>
+  <div class="row between">
+    <div class="row"><span class="avatar sm">${p.emoji}</span><div><b>${esc(p.name)}</b><br><span class="muted small">${esc(p.city)}</span></div></div>
+    <div class="row"><a class="btn small" href="#call" id="chat-call">📞</a><button class="btn ghost small" id="clear">New chat</button></div>
+  </div>
   ${needsKey() ? keyNotice() : ""}
   <div class="convo chat" id="convo"></div>
   <div class="composer">
@@ -596,27 +757,31 @@ function renderChat() {
     ${canListen ? `<button class="mic" id="mic">🎙️</button>` : ""}
     <button class="send" id="send">➤</button>
   </div>`;
+  $("#chat-call").onclick = () => unlockAudio();
   const convo = $("#convo");
   const bubble = (role, html) => { const d = document.createElement("div"); d.className = "bubble " + role; d.innerHTML = html; convo.appendChild(d); d.scrollIntoView({ block: "end" }); return d; };
-  if (!store.chat.length) bubble("ai", md("Bonjour ! 😊 Je suis **Madame Claire**. On peut parler de tout : ta journée, tes passions, ou une question de grammaire. **Alors, comment ça va aujourd'hui ?**"));
-  store.chat.forEach((m) => bubble(m.role === "user" ? "user" : "ai", m.role === "user" ? esc(m.content) : md(m.content) + speakBtn(m.content)));
+  if (!store.chat.length) bubble("ai", renderAI(p.greeting) + speakBtn(p.greeting));
+  store.chat.forEach((m) => bubble(m.role === "user" ? "user" : "ai", m.role === "user" ? esc(m.content) : renderAI(m.content) + speakBtn(m.content)));
   $("#autospeak").onchange = (e) => { store.settings.autoSpeak = e.target.checked; save(); };
   $("#clear").onclick = () => { store.chat = []; save(); renderChat(); };
   const send = async (text) => {
     if (!text || needsKey()) return;
+    unlockAudio();
     bubble("user", esc(text));
+    if (!store.chat.length) store.chat.push({ role: "user", content: "[Chat starts.]" }, { role: "assistant", content: p.greeting });
     store.chat.push({ role: "user", content: text });
     const b = bubble("ai", `<div class="typing"></div>`);
+    const speaker = store.settings.autoSpeak ? createSpeaker({ gender: p.gender }) : null;
     let out = "";
     try {
       const history = store.chat.slice(-30);
       while (history[0]?.role !== "user") history.shift();
-      const full = await streamReply(history, { onText: (t) => { out += t; b.innerHTML = md(out); b.scrollIntoView({ block: "end" }); } });
+      const full = await streamReply(history, { onText: (t) => { out += t; speaker?.push(t); b.innerHTML = renderAI(out); b.scrollIntoView({ block: "end" }); } });
+      speaker?.end();
       store.chat.push({ role: "assistant", content: full });
       b.insertAdjacentHTML("beforeend", speakBtn(full));
       save(); addXP(2); markDaily("chat");
-      if (store.settings.autoSpeak) speak(spokenPart(full));
-    } catch (e) { b.innerHTML = `<span class="error">${esc(e.message)}</span>`; store.chat.pop(); }
+    } catch (e) { speaker?.cancel(); b.innerHTML = `<span class="error">${esc(e.message)}</span>`; store.chat.pop(); }
   };
   const ta = $("#msg");
   ta.oninput = () => { ta.style.height = "auto"; ta.style.height = Math.min(120, ta.scrollHeight) + "px"; };
@@ -626,8 +791,9 @@ function renderChat() {
     let rec = null;
     $("#mic").onclick = async () => {
       if (rec) return rec.stop();
+      stopSpeaking();
       $("#mic").classList.add("on");
-      rec = listen({ onInterim: (t) => (ta.value = t) });
+      rec = listen({ patient: true, onInterim: (t) => (ta.value = t) });
       try { const said = await rec.promise; if (said) { ta.value = ""; await send(said); } } catch (e) { toast(e.message); }
       rec = null; $("#mic")?.classList.remove("on");
     };
@@ -730,14 +896,35 @@ function renderSettings() {
     <div class="row"><button class="btn" id="s-save">Save</button><button class="btn ghost" id="s-test">🔊 Test voice</button></div>
   </div>
   <div class="card">
+    <h3>Your French local</h3>
+    <div class="personas">${PERSONAS.map((x) => `<label class="persona ${x.id === s.persona ? "sel" : ""}"><input type="radio" name="s-persona" value="${x.id}" ${x.id === s.persona ? "checked" : ""}><span class="avatar sm">${x.emoji}</span><span><b>${esc(x.name)}</b> · ${esc(x.city)}<br><span class="muted small">${esc(x.tagline)}</span></span></label>`).join("")}</div>
+    <label>Corrections during calls</label>
+    <select id="s-corr">${[["live", "Out loud, like a friend would (recommended)"], ["screen", "On screen only — don't interrupt me"]].map(([v, l]) => `<option value="${v}" ${s.correctionMode === v ? "selected" : ""}>${l}</option>`).join("")}</select>
+    <label>Pause before it's their turn to talk</label>
+    <select id="s-pat">${[["short", "Short (1 s)"], ["medium", "Medium (2 s)"], ["long", "Long (3.5 s) — I need time to think"]].map(([v, l]) => `<option value="${v}" ${s.patience === v ? "selected" : ""}>${l}</option>`).join("")}</select>
+    <label>Voice</label>
+    <select id="s-voice"><option value="">Auto (best French voice for the person)</option>${frenchVoices().map((v) => `<option ${s.voiceName === v.name ? "selected" : ""}>${esc(v.name)}</option>`).join("")}</select>
+    <p class="muted small">Robotic voice? iPhone: Settings → Accessibility → Spoken Content → Voices → French → download an "Enhanced" or "Premium" voice. Android: install "Speech Services by Google" and download French (France).</p>
+  </div>
+  <div class="card">
     <h3>Data</h3>
     <button class="btn ghost" id="s-export">Export progress</button>
     <button class="btn bad" id="s-reset">Reset everything</button>
   </div>`;
   $("#s-rate").oninput = (e) => ($("#rate-v").textContent = e.target.value);
-  $("#s-test").onclick = () => speak("Bonjour ! Je suis Madame Claire, ta professeure de français.", { rate: +$("#s-rate").value });
+  const pickedPersona = () => getPersona(view.querySelector("[name=s-persona]:checked")?.value);
+  view.querySelectorAll("[name=s-persona]").forEach((r) => (r.onchange = () => {
+    view.querySelectorAll(".persona").forEach((l) => l.classList.toggle("sel", l.contains(r) && r.checked));
+  }));
+  $("#s-test").onclick = () => {
+    const prev = s.voiceName; s.voiceName = $("#s-voice").value;
+    speak(pickedPersona().greeting, { rate: +$("#s-rate").value, gender: pickedPersona().gender });
+    s.voiceName = prev;
+  };
   $("#s-save").onclick = () => {
-    Object.assign(s, { apiKey: $("#s-key").value.trim(), model: $("#s-model").value, effort: $("#s-effort").value, supportLang: $("#s-lang").value, voiceRate: +$("#s-rate").value, onboarded: true });
+    if (pickedPersona().id !== s.persona) store.chat = [];
+    Object.assign(s, { apiKey: $("#s-key").value.trim(), model: $("#s-model").value, effort: $("#s-effort").value, supportLang: $("#s-lang").value, voiceRate: +$("#s-rate").value, onboarded: true,
+      persona: pickedPersona().id, correctionMode: $("#s-corr").value, patience: $("#s-pat").value, voiceName: $("#s-voice").value });
     save(); toast("Saved ✔");
   };
   $("#s-export").onclick = () => {

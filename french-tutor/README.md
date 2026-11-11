@@ -1,6 +1,27 @@
-# 🇫🇷 Madame Claire: AI French Tutor (A2 → B2 in 60 days)
+# 🇫🇷 Parle: learn French by talking with a local (A2 → B2 in 60 days)
 
-A phone app (installable Progressive Web App) that works as a full French teacher:
+A phone app (installable Progressive Web App) that works as a full French teacher. At its centre are **hands-free phone calls with French locals**.
+
+## 📞 Talk with a French local
+
+Pick who you call. Each one is a consistent character with their own life, city, opinions and way of speaking:
+
+| | Who | Speaks like |
+|---|---|---|
+| 👩🏻‍🎨 | **Claire**, 29, Paris: freelance graphic designer in the 11th arrondissement | Fast Parisian French: *du coup, genre, c'est ouf, j'avoue*, some verlan |
+| 🧔🏽‍♂️ | **Marius**, 36, Marseille: runs boat tours to the Calanques | Warm southern French: *peuchère, fada, dégun*, big stories |
+| 👩🏼‍⚕️ | **Léa**, 24, Lyon: student nurse and foodie | Clear, young, standard French, the easiest to understand |
+| 👨🏻‍🍳 | **Antoine**, 52, Bordeaux: chef and history lover | Rich, precise French, ideal for B2 debates and opinions |
+
+**How a call works:** tap **📞 Call**, then just talk, with no buttons needed. When you pause, it's their turn. They answer out loud with a male or female French voice (spoken sentence by sentence as the reply arrives, so there's very little waiting), then listen to you again.
+- **Corrections:** shown on screen in a green box. By default they also correct you out loud the way a French friend would (*"Ah, tu **es** allé à la plage ?"*). You can switch to on-screen only in Settings.
+- **🎙️** interrupts them, or ends your turn early. **🔁 Repeat**, **🐢 Slower**, and **🆘 Help** (explains in your language and gives you 2 sentences you could answer with).
+- **Topics:** just chat, life in their city, your day, café, flat hunting, job interview, doctor, debate, DELF B2 oral exam, weekly challenge.
+- **Hang up** and you get feedback: your level in the call, the mistakes you repeated, the expressions a local would have used. Your weak points feed your quizzes.
+
+**Better voices:** iPhone → Settings → Accessibility → Spoken Content → Voices → French → download an *Enhanced/Premium* voice. Android → install *Speech Services by Google* and download French (France). You can then choose a specific voice in the app's Settings.
+
+## Everything else
 
 | Feature | What it does |
 |---|---|
@@ -12,7 +33,7 @@ A phone app (installable Progressive Web App) that works as a full French teache
 | 📖 **Reading** | Offline texts, plus AI-generated texts on any topic at your level, with a glossary, audio and comprehension questions. |
 | 🎧 **Dictation** | Hear a sentence, type it, then see the accent-sensitive errors highlighted. |
 | ✍️ **Writing** | DELF-style correction: every error with an explanation, a score out of 25, an estimated CEFR level and a **B2 rewrite** of your text. |
-| 💬 **Free chat** | Talk about anything by text or voice. Every message gets a correction, and new words are taught in context. |
+| 💬 **Chat** | Text or voice messages with your local. Every message gets a correction, and replies are read aloud. |
 | 🎯 **Placement test** | 5 open questions, spoken or typed. The AI estimates your CEFR level and your weak points. |
 
 Runs offline for flashcards, lessons, quizzes, reading library, dictation and pronunciation. The AI features need internet.
@@ -54,7 +75,8 @@ french-tutor/
     ├── app.js            all screens
     ├── curriculum.js     8-week plan, grammar, vocab, quizzes, texts
     ├── tutor.js          Claude integration (streaming + structured outputs)
-    ├── speech.js         French voice + speech recognition + scoring
+    ├── personas.js       the French locals (Claire, Marius, Léa, Antoine)
+    ├── speech.js         streaming French voice, patient listening, scoring
     └── store.js          progress, streaks, spaced repetition
 ```
 
