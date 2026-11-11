@@ -79,7 +79,6 @@ Runs offline for flashcards, lessons, quizzes, reading library, dictation and pr
 ## AI engine and cost (free by default)
 
 - **The app does not use your Claude subscription or Anthropic credits.** It runs on a free service with your own free key: **Google Gemini** (default), **Groq** or **OpenRouter** free models. "Find models" lists what your key can use and picks a suitable one.
-- "Response depth" defaults to *Quick* (`effort: low`), which suits conversation. Use *Thorough* for deep grammar lessons.
 - Free plans have limits (requests per minute and per day). The app waits and retries when the per-minute limit is hit, and tells you when the daily allowance is used up; you can then switch to another free provider in Settings. Free services may use your messages to improve their products, so don't type sensitive personal information.
 - Claude is still available in Settings as an optional, paid engine (best quality, billed per request to an Anthropic API account). It is off unless you choose it.
 
