@@ -132,25 +132,75 @@ export async function streamReply(messages, { system, onText, maxTokens = 4000 }
   }
 }
 
-/** Ask for JSON matching `schema` (structured outputs). */
-export async function askJSON(prompt, schema, { system } = {}) {
+/** Ask for JSON matching `schema` (structured outputs).
+ *  `web: "fetch"` lets Claude open URLs in the prompt; `web: "search"` lets it also search the web. */
+export async function askJSON(prompt, schema, { system, web = null, domains = null } = {}) {
   const c = await getClient();
   const model = store.settings.model;
+  const tools = web ? webTools(web, domains) : undefined;
+  const base = {
+    model,
+    max_tokens: 16000,
+    system: system || systemPrompt("When asked to produce an exercise, output ONLY the requested JSON."),
+    ...(tools ? { tools } : {}),
+    ...fallbackParams(model),
+  };
+  const run = async (withFormat) => {
+    const user = withFormat ? prompt : `${prompt}\n\nReturn ONLY a JSON object (no markdown, no commentary) matching this JSON schema:\n${JSON.stringify(schema)}`;
+    let messages = [{ role: "user", content: user }];
+    let res;
+    for (let i = 0; i < 4; i++) {
+      res = await c.beta.messages.create({
+        ...base,
+        output_config: withFormat ? { effort: store.settings.effort, format: { type: "json_schema", schema } } : { effort: store.settings.effort },
+        messages,
+      });
+      if (res.stop_reason !== "pause_turn") break;
+      // Server tools paused mid-turn: send the turn back so the server resumes it.
+      messages = [{ role: "user", content: user }, { role: "assistant", content: res.content }];
+    }
+    if (res.stop_reason === "refusal") throw new TutorError("The tutor couldn't create that exercise. Try another link or topic.");
+    return parseJSON(res.content);
+  };
   try {
-    const res = await c.beta.messages.create({
-      model,
-      max_tokens: 16000,
-      system: system || systemPrompt("When asked to produce an exercise, output ONLY the requested JSON."),
-      output_config: { effort: store.settings.effort, format: { type: "json_schema", schema } },
-      messages: [{ role: "user", content: prompt }],
-      ...fallbackParams(model),
-    });
-    if (res.stop_reason === "refusal") throw new TutorError("The tutor couldn't create that exercise. Try again.");
-    const text = res.content.filter((b) => b.type === "text").map((b) => b.text).join("");
-    return JSON.parse(text);
+    try {
+      return await run(true);
+    } catch (err) {
+      // Some accounts don't allow structured outputs together with web tools: retry as plain JSON.
+      if (tools && AnthropicLib && err instanceof AnthropicLib.BadRequestError && /format|output_config|structured/i.test(err.message)) return await run(false);
+      throw err;
+    }
   } catch (err) {
+    if (tools && AnthropicLib && err instanceof AnthropicLib.BadRequestError && /web_(search|fetch)|tool/i.test(err.message)) {
+      throw new TutorError("Web reading isn't enabled for your API key. In console.anthropic.com → Settings → Privacy, allow web search / web fetch, then try again. (" + err.message + ")");
+    }
     throw friendlyError(err);
   }
+}
+
+// Trusted French-learning sites the tutor may search.
+export const TRUSTED_SITES = [
+  "francaisfacile.rfi.fr", "rfi.fr", "apprendre.tv5monde.com", "tv5monde.com", "1jour1actu.com",
+  "francetvinfo.fr", "lemonde.fr", "bonjourdefrance.com", "lepointdufle.net", "france-education-international.fr",
+  "podcastfrancaisfacile.com", "francaisauthentique.com", "connexionfrancaise.com", "lefigaro.fr", "20minutes.fr",
+];
+
+function webTools(web, domains) {
+  const t = [{ type: "web_fetch_20260209", name: "web_fetch", max_uses: 3, max_content_tokens: 30000 }];
+  if (web === "search") t.unshift({ type: "web_search_20260209", name: "web_search", max_uses: 3, ...(domains ? { allowed_domains: domains } : {}) });
+  return t;
+}
+
+function parseJSON(content) {
+  // Use the text written after the last tool result (earlier text may be "let me fetch…").
+  let lastTool = -1;
+  content.forEach((b, i) => { if (/_tool_result$/.test(b.type)) lastTool = i; });
+  const texts = content.slice(lastTool + 1).filter((b) => b.type === "text").map((b) => b.text).join("");
+  const all = texts || content.filter((b) => b.type === "text").map((b) => b.text).join("");
+  try { return JSON.parse(all); } catch { /* try to extract */ }
+  const m = all.match(/\{[\s\S]*\}/);
+  if (m) { try { return JSON.parse(m[0]); } catch { /* fall through */ } }
+  throw new TutorError("The tutor's answer was incomplete. Please try again.");
 }
 
 // ---------- JSON schemas for generated exercises ----------

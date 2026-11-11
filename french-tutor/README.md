@@ -1,6 +1,30 @@
-# 🇫🇷 Parle: learn French by talking with a local (A2 → B2 in 60 days)
+# 🇫🇷 Parle: TCF prep + a French local to talk with (A2 → B2 in 60 days)
 
 A phone app (installable Progressive Web App) that works as a full French teacher. At its centre are **hands-free phone calls with French locals**.
+
+## 🎯 Built on the TCF exam
+
+The whole program follows the **TCF** format (Test de connaissance du français, by France Éducation International). In the TCF tab, choose **TCF Canada** or **TCF tout public**:
+
+| Test | TCF Canada | TCF tout public | In the app |
+|---|---|---|---|
+| 🎧 Compréhension orale | 39 QCM · 35 min | 29 QCM · 25 min | Recordings read by French voices (male/female), played once in exam mode; practice mode has replay, slow playback and the transcript |
+| 🧩 Structures de la langue | — | 18 QCM · 15 min | Grammar and vocabulary in context |
+| 📖 Compréhension écrite | 39 QCM · 60 min | 29 QCM · 45 min | Documents from signs and ads (A1) to opinion pieces (C2) |
+| ✍️ Expression écrite | 3 tasks · 60 min | 3 tasks · 60 min | T1 message (60–120 words), T2 article (120–150), T3 two points of view (120–180). Live word counter, timed mock, graded /20 by task with corrections and a B2 model answer |
+| 🗣️ Expression orale | 3 tasks · 12 min | 3 tasks · 12 min | Voice exam with an AI examiner: T1 guided interview, T2 interaction (with a 2-min preparation screen), T3 point of view. Timed, no corrections during the task (like the real exam), scored /20 at the end |
+
+- **Practice** (10 questions at your level, instant explanations) or a **full timed mock exam** (A1 → C2 progression, score out of 699 with your CEFR level). Harder questions are worth more points. The official weighting isn't public, so the score is an estimate.
+- **Method lessons** for each test: format, scoring, traps, step-by-step strategy, plus a deeper AI lesson with worked examples.
+- **TCF score dashboard** with your target: B2 = 400–499/699 (multiple-choice tests) and 10–13/20 (writing/speaking).
+- The **60-day plan and daily mission are TCF-based**: each day covers CO, CE, EE and EO practice, and each week has a TCF focus, with full mocks in weeks 4, 7 and 8.
+
+### 🌐 Learn from websites
+- **Paste any link** (an RFI article, a TV5Monde page, a podcast transcript, a practice test…). Your tutor opens the page with Claude's server-side **web fetch** tool, then gives you a lesson (summary, vocabulary, grammar, TCF tip) plus TCF questions (reading or listening), writing subjects or speaking subjects built from it. If the page has practice questions, it reuses them.
+- **"Find fresh material for me"** searches trusted French sites (RFI, TV5Monde, 1jour1actu, franceinfo, Le Monde, Podcast Français Facile, …) with **web search** and builds an exercise from a current article at your level.
+- Add the page's vocabulary to your flashcards in one tap. Your recent links are saved.
+- Pages behind a login or anti-bot protection can't be read (the official France Éducation International site blocks automated reading, so open it yourself).
+- Web search must be allowed for your API key: console.anthropic.com → Settings → Privacy.
 
 ## 📞 Talk with a French local
 
@@ -75,6 +99,8 @@ french-tutor/
     ├── app.js            all screens
     ├── curriculum.js     8-week plan, grammar, vocab, quizzes, texts
     ├── tutor.js          Claude integration (streaming + structured outputs)
+    ├── tcf.js            TCF format, practice, mock exams, scoring, learning from websites
+    ├── ui.js             shared UI helpers
     ├── personas.js       the French locals (Claire, Marius, Léa, Antoine)
     ├── speech.js         streaming French voice, patient listening, scoring
     └── store.js          progress, streaks, spaced repetition

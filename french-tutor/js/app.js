@@ -4,41 +4,9 @@ import { streamReply, askJSON, dayNumber, currentWeek, systemPrompt, QUIZ_SCHEMA
 import { speak, stopSpeaking, listen, canListen, canSpeak, similarity, missedWords, createSpeaker, unlockAudio, frenchVoices } from "./speech.js";
 import { PERSONAS, getPersona } from "./personas.js";
 
-const $ = (s, el = document) => el.querySelector(s);
-const view = $("#view");
+import { $, view, esc, md, toast, speakBtn, level, levelBucket, shuffle, needsKey, keyNotice, me, renderAI, fmtTime, bus } from "./ui.js";
+import { renderTCF } from "./tcf.js";
 
-// ---------- helpers ----------
-const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-function md(s) {
-  return esc(s)
-    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-    .replace(/(^|[^*])\*(?!\s)(.+?)\*(?!\*)/g, "$1<em>$2</em>")
-    .replace(/^#{1,3} (.+)$/gm, "<h4>$1</h4>")
-    .replace(/^[-•] (.+)$/gm, "<li>$1</li>")
-    .replace(/\n/g, "<br>");
-}
-function toast(msg) {
-  const t = $("#toast");
-  t.textContent = msg;
-  t.classList.add("show");
-  clearTimeout(t._h);
-  t._h = setTimeout(() => t.classList.remove("show"), 2600);
-}
-const speakBtn = (text) => canSpeak ? `<button class="icon-btn say" data-say="${esc(text)}" aria-label="Listen">🔊</button>` : "";
-const level = () => store.progress.level;
-const levelBucket = () => (level().startsWith("B2") ? "B2" : level().startsWith("B1") ? "B1" : "A2");
-const shuffle = (a) => a.map((v) => [Math.random(), v]).sort((x, y) => x[0] - y[0]).map((x) => x[1]);
-const needsKey = () => !store.settings.apiKey;
-const me = () => getPersona(store.settings.persona);
-const isCorr = (l) => /^\s*(✏️|💡)/u.test(l);
-// AI message: corrections in a highlighted box, the rest as text.
-function renderAI(text) {
-  const lines = text.split("\n");
-  const corr = lines.filter(isCorr);
-  const rest = lines.filter((l) => !isCorr(l)).join("\n").trim();
-  return (corr.length ? `<div class="corr">${corr.map(esc).join("<br>")}</div>` : "") + md(rest);
-}
-const keyNotice = () => `<div class="notice">🔑 The AI tutor needs your Anthropic API key. <a href="#settings">Add it in Settings</a>. Offline exercises still work.</div>`;
 
 document.addEventListener("click", (e) => {
   const b = e.target.closest("[data-say]");
@@ -58,7 +26,7 @@ setInterval(() => {
 const routes = {
   home: renderHome, learn: renderLearn, lesson: renderLesson, cards: renderCards, quiz: renderQuiz,
   speak: renderSpeak, read: renderRead, listen: renderListen, write: renderWrite, chat: renderChat,
-  progress: renderProgress, settings: renderSettings, placement: renderPlacement, more: renderMore, call: renderCall,
+  progress: renderProgress, settings: renderSettings, placement: renderPlacement, more: renderMore, call: renderCall, tcf: renderTCF,
 };
 let cleanup = null;
 function route() {
@@ -84,6 +52,8 @@ function renderWelcome() {
   <div class="card">
     <h3>How it works</h3>
     <ul class="checks">
+      <li>🎯 Built on the <b>TCF exam</b>: listening, reading, writing and speaking, with timed mock exams and scores</li>
+      <li>🌐 Paste any French web page and get TCF questions and a lesson from it</li>
       <li>📅 A 60-day plan: 8 weeks of grammar, vocabulary and themes</li>
       <li>🧠 Flashcards that repeat words right before you'd forget them</li>
       <li>📞 Hands-free phone calls with a French local who listens, corrects you and answers out loud</li>
@@ -120,7 +90,7 @@ function renderHome() {
   const wk = currentWeek();
   const done = p.daily[today()] || [];
   const mins = p.minutes[today()] || 0;
-  const due = VOCAB.filter(([fr]) => { const c = store.cards[fr]; return c && c.due <= Date.now(); }).length;
+  const due = [...VOCAB, ...(p.extraVocab || [])].filter(([fr]) => { const c = store.cards[fr]; return c && c.due <= Date.now(); }).length;
   view.innerHTML = `
   <section class="hero small">
     <div>
@@ -135,6 +105,7 @@ function renderHome() {
     <div><b>⏱️ ${mins}</b><span>min today</span></div>
   </div>
   <div class="progressbar"><div style="width:${Math.round((day / 60) * 100)}%"></div></div>
+  <a class="card tcf-card" href="#tcf"><span class="big-ico">🎯</span><div><b>TCF exam prep</b><br><span class="muted small">Listening · Reading · Writing · Speaking · Mock exams · Learn from websites</span></div></a>
   <a class="card call-card" href="#call" id="home-call">
     <div class="avatar sm">${me().emoji}</div>
     <div><b>📞 Call ${esc(me().name)}</b><br><span class="muted">${esc(me().tagline)} · ${esc(me().city)}</span></div>
@@ -144,6 +115,7 @@ function renderHome() {
     <h3>${esc(wk.title)}</h3>
     <p>${esc(wk.goal)}</p>
     <p class="muted">🎤 Speaking challenge: ${esc(wk.speaking)}</p>
+    <p class="muted">🎯 TCF focus: ${esc(wk.tcf || "")}</p>
     <a class="btn" href="#learn">Open this week's lessons</a>
   </div>
   <div class="card">
@@ -184,6 +156,7 @@ function renderLearn() {
       </ul>
       <p class="muted">Themes: ${w.themes.map(esc).join(" · ")}</p>
       <p class="muted">🎤 ${esc(w.speaking)}</p>
+      <p class="muted">🎯 TCF: ${esc(w.tcf || "")}</p>
     </details>`).join("")}`;
 }
 
@@ -229,10 +202,11 @@ function renderLesson(id) {
 // ---------- flashcards (SRS) ----------
 function renderCards() {
   const now = Date.now();
-  const due = VOCAB.filter(([fr]) => store.cards[fr] && store.cards[fr].due <= now);
+  const DECK = [...VOCAB, ...(store.progress.extraVocab || [])];
+  const due = DECK.filter(([fr]) => store.cards[fr] && store.cards[fr].due <= now);
   const newToday = Object.values(store.cards).filter((c) => c.firstSeen === today()).length;
   const allowedLevels = ["A2", "B1", "B2"].slice(0, ["A2", "B1", "B2"].indexOf(levelBucket()) + 2);
-  const fresh = VOCAB.filter(([fr, , lv]) => !store.cards[fr] && allowedLevels.includes(lv)).slice(0, Math.max(0, 20 - newToday));
+  const fresh = DECK.filter(([fr, , lv]) => !store.cards[fr] && allowedLevels.includes(lv)).slice(0, Math.max(0, 20 - newToday));
   const queue = shuffle([...due, ...fresh]);
   const learned = Object.values(store.cards).filter((c) => c.interval >= 7).length;
   let i = 0, flipped = false, reviewed = 0;
@@ -242,7 +216,7 @@ function renderCards() {
       if (reviewed) { markDaily("srs"); addXP(reviewed); }
       view.innerHTML = `<h2>🧠 Flashcards</h2>
         <div class="card center"><div class="big-emoji">🎉</div><h3>All done for now!</h3>
-        <p>${reviewed} cards reviewed · ${learned} words in long-term memory · ${VOCAB.length} in deck</p>
+        <p>${reviewed} cards reviewed · ${learned} words in long-term memory · ${DECK.length} in deck</p>
         <a class="btn" href="#home">Back home</a></div>`;
       return;
     }
@@ -421,22 +395,58 @@ function pronunciationDrill() {
 }
 
 // ---------- the phone call (hands-free conversation) ----------
+// arg = topic index (call with your local) or "custom" (configured by another screen, e.g. a TCF oral task).
 function renderCall(arg) {
-  const p = me();
-  if (needsKey()) { view.innerHTML = `<h2>📞 Call ${esc(p.name)}</h2>${keyNotice()}`; return; }
-  const [topicTitle, topicPrompt] = TOPICS[+arg] || TOPICS[0];
-  const scenario = topicPrompt === "WEEKLY"
-    ? `Help me with this week's speaking challenge: "${currentWeek().speaking}". Guide me, keep me talking, and give me feedback at the end.`
-    : topicPrompt;
-  const sys = systemPrompt(scenario ? `\nTOPIC OF THIS CALL: ${scenario}` : "\nTOPIC OF THIS CALL: just a friendly catch-up. Talk about anything — your life, the learner's life, plans, news, culture.", { call: true });
+  if (needsKey()) { view.innerHTML = `<h2>📞 Call</h2>${keyNotice()}`; return; }
+  let cfg;
+  if (arg === "custom") {
+    cfg = bus.pendingCall;
+    if (!cfg) { location.hash = "speak"; return; }
+  } else {
+    const p = me();
+    const [title, topicPrompt] = TOPICS[+arg] || TOPICS[0];
+    const scenario = topicPrompt === "WEEKLY"
+      ? `Help me with this week's speaking challenge: "${currentWeek().speaking}". Guide me, keep me talking, and give me feedback at the end.`
+      : topicPrompt;
+    cfg = {
+      persona: p, title,
+      system: systemPrompt(scenario ? `\nTOPIC OF THIS CALL: ${scenario}` : "\nTOPIC OF THIS CALL: just a friendly catch-up. Talk about anything — your life, the learner's life, plans, news, culture.", { call: true }),
+      greeting: scenario ? null : p.greeting,
+      opening: scenario ? "[The phone call starts. Greet me in character and start the topic of this call.]" : null,
+      bye: BYES[p.id] || "Allez, à bientôt !",
+      againHref: `#call/${+arg || 0}`,
+    };
+  }
+  if (cfg.prep) return renderPrep(cfg, () => startCall(cfg));
+  startCall(cfg);
+}
 
+function renderPrep(cfg, go) {
+  document.body.classList.add("in-call");
+  let left = cfg.prep.seconds;
+  view.innerHTML = `<div class="call">
+    <div class="call-top"><span>📝 Préparation</span><span id="pt">${fmtTime(left)}</span></div>
+    <div class="card prep">${cfg.prep.html}<textarea rows="5" placeholder="Notes (not graded)"></textarea></div>
+    <button class="btn full" id="prep-go">I'm ready, start now</button>
+  </div>`;
+  const t = setInterval(() => {
+    left--; $("#pt") && ($("#pt").textContent = fmtTime(left));
+    if (left <= 0) { clearInterval(t); go(); }
+  }, 1000);
+  cleanup = () => { clearInterval(t); document.body.classList.remove("in-call"); };
+  $("#prep-go").onclick = () => { unlockAudio(); clearInterval(t); go(); };
+}
+
+function startCall(cfg) {
+  const p = cfg.persona;
   document.body.classList.add("in-call");
   view.innerHTML = `
   <div class="call">
-    <div class="call-top"><span>📞 <span id="timer">00:00</span></span><span>${esc(topicTitle)}</span></div>
+    <div class="call-top"><span>${cfg.timeLimit ? "⏱️" : "📞"} <span id="timer">${cfg.timeLimit ? fmtTime(cfg.timeLimit) : "00:00"}</span></span><span>${esc(cfg.title)}</span></div>
     <div class="avatar xl" id="avatar">${p.emoji}</div>
     <h2 class="center">${esc(p.name)}</h2>
     <p class="muted center">${esc(p.city)}</p>
+    ${cfg.taskHtml || ""}
     <p class="status" id="status">Calling…</p>
     <div class="live-text" id="live"></div>
     <div class="convo call-convo" id="convo"></div>
@@ -444,8 +454,8 @@ function renderCall(arg) {
       <button class="ctl" id="c-repeat"><span>🔁</span>Repeat</button>
       <button class="ctl" id="c-slow"><span>🐢</span>Slower</button>
       <button class="mic big" id="c-mic" aria-label="Talk">🎙️</button>
-      <button class="ctl" id="c-help"><span>🆘</span>Help</button>
-      <button class="ctl hang" id="c-end"><span>📵</span>Hang up</button>
+      ${cfg.noCorrections ? "" : `<button class="ctl" id="c-help"><span>🆘</span>Help</button>`}
+      <button class="ctl hang" id="c-end"><span>📵</span>${cfg.timeLimit ? "Finish" : "Hang up"}</button>
     </div>
   </div>`;
 
@@ -456,13 +466,19 @@ function renderCall(arg) {
   const t0 = Date.now();
   const timer = setInterval(() => {
     const sec = Math.floor((Date.now() - t0) / 1000);
-    $("#timer") && ($("#timer").textContent = `${String(Math.floor(sec / 60)).padStart(2, "0")}:${String(sec % 60).padStart(2, "0")}`);
+    const el = $("#timer"); if (!el) return;
+    if (cfg.timeLimit) {
+      const left = cfg.timeLimit - sec;
+      el.textContent = fmtTime(left);
+      el.classList.toggle("late", left <= 30);
+      if (left <= 0) { toast("⏱️ Time's up!"); endCall(); }
+    } else el.textContent = fmtTime(sec);
   }, 1000);
 
   const STATUS = {
     thinking: `${p.name} réfléchit…`,
     speaking: `${p.name} parle… (tap 🎙️ to interrupt)`,
-    listening: "À toi ! Je t'écoute… 🎙️",
+    listening: "À vous ! Je vous écoute… 🎙️",
     paused: "Tap 🎙️ to talk",
   };
   const setState = (st, msg) => {
@@ -483,7 +499,7 @@ function renderCall(arg) {
     let out = "";
     try {
       streaming = streamReply(msgs, {
-        system: sys, maxTokens: 1500,
+        system: cfg.system, maxTokens: 1500,
         onText: (t) => {
           out += t;
           b.innerHTML = renderAI(out);
@@ -536,7 +552,6 @@ function renderCall(arg) {
     }
     else if (state === "listening") rec?.stop();                          // "I'm done talking"
     else if (state === "paused" || state === "idle") {
-      // Retry a failed turn if the last message is the learner's, else listen.
       if (msgs[msgs.length - 1]?.role === "user") aiTurn(null); else listenTurn();
     }
   };
@@ -554,13 +569,13 @@ function renderCall(arg) {
     toast(`Voice speed ${store.settings.voiceRate}`);
     replay();
   };
-  $("#c-help").onclick = () => {
+  $("#c-help") && ($("#c-help").onclick = () => {
     if (state === "thinking") return;
     stopListening(); speaker?.cancel();
     msgs.push({ role: "user", content: `[I pressed HELP — I'm lost. Very briefly explain in ${store.settings.supportLang} what you just said, give me 2 simple French sentences I could answer with, then ask your question again in simpler French.]` });
     bubble("user", "🆘 Help!");
     aiTurn(null);
-  };
+  });
 
   const hangUp = () => {
     active = false;
@@ -570,38 +585,42 @@ function renderCall(arg) {
   };
   cleanup = hangUp;
 
-  $("#c-end").onclick = async () => {
+  async function endCall() {
+    if (!active) return;
     hangUp();
     cleanup = null;
     const mins = Math.max(1, Math.round((Date.now() - t0) / 60000));
     const report = document.createElement("div");
-    view.innerHTML = `<h2>📵 Call ended · ${mins} min</h2>`;
+    view.innerHTML = `<h2>📵 ${esc(cfg.title)} · ${mins} min</h2>`;
     view.appendChild(report);
-    speak(BYES[p.id] || "Allez, à bientôt !", { gender: p.gender });
+    speak(cfg.bye || "À bientôt !", { gender: p.gender });
     if (turns < 2) {
-      report.innerHTML = `<div class="card"><p>Short call! Next time try to talk for at least 5 minutes.</p><a class="btn" href="#call/${+arg || 0}">📞 Call again</a></div>`;
+      report.innerHTML = `<div class="card"><p>Very short! Next time try to keep talking until the end.</p><a class="btn" href="${cfg.againHref}">Try again</a></div>`;
       return;
     }
-    report.innerHTML = `<div class="card"><h3>Your feedback from ${esc(p.name)}</h3><div id="fb"><div class="typing"></div></div></div>
-      <div class="row"><a class="btn" href="#call/${+arg || 0}">📞 Call again</a><a class="btn ghost" href="#home">Home</a></div>`;
+    report.innerHTML = `<div class="card"><h3>Your feedback</h3><div id="fb"><div class="typing"></div></div></div>
+      <div class="row"><a class="btn" href="${cfg.againHref}">Again</a><a class="btn ghost" href="#home">Home</a></div>`;
     let out = "";
+    const prompt = cfg.feedbackPrompt || `[The call is over. Out of character as a tutor, in ${store.settings.supportLang}, give me feedback: estimated level in this call, what I did well, my 3 most important recurring mistakes (wrong → right), 5 natural expressions a local would have used, and one line of encouragement from you. Then on the very last line write "WEAK:" followed by my weak grammar points separated by semicolons.]`;
     try {
-      await streamReply([...msgs, { role: "user", content: `[The call is over. Out of character as a tutor, in ${store.settings.supportLang}, give me feedback: estimated level in this call, what I did well, my 3 most important recurring mistakes (wrong → right), 5 natural expressions a local would have used, and one line of encouragement from you. Then on the very last line write "WEAK:" followed by my weak grammar points separated by semicolons.]` }],
+      await streamReply([...msgs, { role: "user", content: prompt }],
         { system: systemPrompt(), maxTokens: 3000, onText: (t) => { out += t; $("#fb").innerHTML = md(out.replace(/WEAK:[\s\S]*$/, "")); } });
       const weak = out.match(/WEAK:([\s\S]*)$/);
       if (weak) weak[1].split(";").map((x) => x.trim()).filter(Boolean).forEach(addWeakPoint);
+      cfg.onFeedback?.(out);
       addXP(10 + mins * 2);
     } catch (e) { $("#fb").innerHTML = `<p class="error">${esc(e.message)}</p>`; }
-  };
+  }
+  $("#c-end").onclick = endCall;
 
   // Start the call.
-  if (!scenario) {
-    msgs.push({ role: "user", content: "[The phone call starts. Greet me.]" }, { role: "assistant", content: p.greeting });
-    bubble("ai", renderAI(p.greeting));
+  if (cfg.greeting) {
+    msgs.push({ role: "user", content: "[The phone call starts. Greet me.]" }, { role: "assistant", content: cfg.greeting });
+    bubble("ai", renderAI(cfg.greeting));
     setState("speaking");
-    speak(p.greeting, { gender: p.gender }).then(() => active && listenTurn());
+    speak(cfg.greeting, { gender: p.gender }).then(() => active && listenTurn());
   } else {
-    msgs.push({ role: "user", content: "[The phone call starts. Greet me in character and start the topic of this call.]" });
+    msgs.push({ role: "user", content: cfg.opening || "[Start.]" });
     aiTurn(null);
   }
 }
@@ -871,7 +890,7 @@ function renderProgress() {
 function renderMore() {
   view.innerHTML = `<h2>More</h2>
   <div class="grid">
-    ${[["cards", "🧠", "Flashcards"], ["quiz", "📝", "Quiz"], ["read", "📖", "Reading"], ["listen", "🎧", "Dictation"], ["write", "✍️", "Writing"], ["progress", "📈", "Progress"], ["placement", "🎯", "Level test"], ["settings", "⚙️", "Settings"]]
+    ${[["tcf", "🎯", "TCF prep"], ["learn", "📚", "Curriculum"], ["tcf/link", "🌐", "Learn from a link"], ["cards", "🧠", "Flashcards"], ["quiz", "📝", "Quiz"], ["read", "📖", "Reading"], ["listen", "🎧", "Dictation"], ["write", "✍️", "Writing"], ["progress", "📈", "Progress"], ["placement", "🎯", "Level test"], ["settings", "⚙️", "Settings"]]
       .map(([h, i, t]) => `<a class="tile" href="#${h}"><span>${i}</span>${t}</a>`).join("")}
   </div>`;
 }

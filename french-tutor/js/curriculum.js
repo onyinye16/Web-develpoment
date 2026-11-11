@@ -8,6 +8,7 @@ export const WEEKS = [
     grammar: ["present-tense", "articles-gender", "negation", "questions"],
     themes: ["Introductions & personal life", "Daily routine", "Food & shopping"],
     speaking: "Introduce yourself for 2 minutes without stopping.",
+    tcf: "Discover the TCF format: CO/CE A1–A2 items · EE task 1 (message) · EO task 1 (guided interview)",
   },
   {
     week: 2, level: "A2+", title: "Talking about the past",
@@ -15,6 +16,7 @@ export const WEEKS = [
     grammar: ["passe-compose", "imparfait", "pc-vs-imparfait", "reflexive-verbs"],
     themes: ["Childhood memories", "Weekend & holidays", "Travel"],
     speaking: "Tell the story of your last holiday in 3 minutes.",
+    tcf: "CO/CE A2–B1 practice daily · EE task 1 + task 2 (story with passé composé/imparfait) · EO task 1",
   },
   {
     week: 3, level: "B1", title: "Future & pronouns",
@@ -22,6 +24,7 @@ export const WEEKS = [
     grammar: ["futur-proche-simple", "object-pronouns", "y-en", "comparatives"],
     themes: ["Work & studies", "Plans & ambitions", "Health"],
     speaking: "Explain your 5-year plan and justify your choices.",
+    tcf: "CO/CE B1 · EE task 2 · EO task 2 (asking questions politely)",
   },
   {
     week: 4, level: "B1", title: "Hypotheses & opinions",
@@ -29,6 +32,7 @@ export const WEEKS = [
     grammar: ["conditionnel", "si-clauses-1-2", "relative-pronouns", "opinion-phrases"],
     themes: ["Environment", "Technology", "Media"],
     speaking: "Give your opinion on social media for 3 minutes, with examples.",
+    tcf: "First full mock exam (diagnostic) · EE task 3 introduction · EO task 3 (opinion)",
   },
   {
     week: 5, level: "B1+", title: "The subjunctive",
@@ -36,6 +40,7 @@ export const WEEKS = [
     grammar: ["subjonctif-present", "subjonctif-triggers", "plus-que-parfait", "connectors"],
     themes: ["Society & culture", "Feelings & relationships", "Education"],
     speaking: "Give advice to a friend using 'il faut que' and 'je te conseille de'.",
+    tcf: "CO/CE B1–B2 · EE task 3 (summarise two opinions + yours) · EO tasks 2–3",
   },
   {
     week: 6, level: "B2-", title: "Complex sentences",
@@ -43,6 +48,7 @@ export const WEEKS = [
     grammar: ["si-clause-3", "conditionnel-passe", "gerondif", "passive-voice"],
     themes: ["Economy & work world", "Politics (basics)", "Cities & housing"],
     speaking: "Describe a regret: 'Si j'avais su, j'aurais…' – 3 minutes.",
+    tcf: "CO/CE B2 items + timing strategy · EE full 60-min mock · EO task 3 with counter-arguments",
   },
   {
     week: 7, level: "B2", title: "Argue & persuade",
@@ -50,13 +56,15 @@ export const WEEKS = [
     grammar: ["reported-speech", "concession", "cause-consequence", "advanced-relatives"],
     themes: ["Debates", "Science", "Globalisation"],
     speaking: "Debate: 'Le télétravail est-il l'avenir ?' – defend both sides.",
+    tcf: "B2–C1 stretch items · second full mock (all tests) · fix the weak points it shows",
   },
   {
     week: 8, level: "B2", title: "Fluency & exam readiness",
-    goal: "Polish fluency, idioms, register, and simulate the DELF B2.",
+    goal: "Polish fluency, idioms and register, and take full TCF mock exams.",
     grammar: ["register-formal-informal", "idioms", "nuance-adverbs", "review-all"],
-    themes: ["DELF B2 mock tasks", "Current events", "Free conversation"],
-    speaking: "15-minute DELF B2 oral simulation with the tutor.",
+    themes: ["TCF mock exams", "Current events", "Free conversation"],
+    speaking: "Full TCF oral (3 tasks, 12 min) with the examiner.",
+    tcf: "Two full TCF mocks in exam conditions · review every error · EO all 3 tasks timed",
   },
 ];
 
@@ -369,11 +377,11 @@ export const SENTENCES = {
 // The daily routine that makes the 60-day goal possible.
 export const DAILY_PLAN = [
   { id: "srs", label: "Flashcards (spaced repetition)", minutes: 15, view: "cards" },
-  { id: "lesson", label: "Today's grammar lesson", minutes: 25, view: "learn" },
-  { id: "quiz", label: "Grammar quiz", minutes: 10, view: "quiz" },
-  { id: "speak", label: "Speaking practice with the tutor", minutes: 30, view: "speak" },
-  { id: "read", label: "Reading comprehension", minutes: 20, view: "read" },
-  { id: "listen", label: "Listening / dictation", minutes: 15, view: "listen" },
-  { id: "write", label: "Writing + corrections", minutes: 20, view: "write" },
-  { id: "chat", label: "Free conversation", minutes: 15, view: "chat" },
+  { id: "lesson", label: "Today's grammar lesson", minutes: 20, view: "learn" },
+  { id: "tcf-co", label: "TCF · Compréhension orale", minutes: 20, view: "tcf/co" },
+  { id: "tcf-ce", label: "TCF · Compréhension écrite", minutes: 20, view: "tcf/ce" },
+  { id: "tcf-ee", label: "TCF · Expression écrite", minutes: 25, view: "tcf/ee" },
+  { id: "tcf-eo", label: "TCF · Expression orale (examiner)", minutes: 15, view: "tcf/eo" },
+  { id: "speak", label: "Call your French local", minutes: 30, view: "speak" },
+  { id: "quiz", label: "Grammar & structures quiz", minutes: 10, view: "quiz" },
 ];

@@ -15,6 +15,7 @@ const defaults = () => ({
     patience: "medium",       // how long a pause ends your turn in a call
     voiceName: "",            // override the auto-picked French voice
     autoSpeak: true,
+    tcfVariant: "canada",     // "canada" | "tp" (tout public)
   },
   progress: {
     startDate: new Date().toISOString().slice(0, 10),

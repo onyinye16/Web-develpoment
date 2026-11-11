@@ -1,8 +1,8 @@
 // Offline support: cache the app shell; network-first so updates arrive quickly.
-const CACHE = "parle-v2";
+const CACHE = "parle-v3";
 const SHELL = [
   "./", "index.html", "css/styles.css", "manifest.webmanifest",
-  "js/app.js", "js/curriculum.js", "js/store.js", "js/tutor.js", "js/speech.js", "js/personas.js",
+  "js/app.js", "js/curriculum.js", "js/store.js", "js/tutor.js", "js/speech.js", "js/personas.js", "js/ui.js", "js/tcf.js",
   "icons/icon.svg", "icons/icon-192.png", "icons/icon-512.png",
 ];
 
