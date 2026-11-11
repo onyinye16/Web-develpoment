@@ -11,20 +11,21 @@ The whole program follows the **TCF** format (Test de connaissance du français,
 | 🎧 Compréhension orale | 39 QCM · 35 min | 29 QCM · 25 min | Recordings read by French voices (male/female), played once in exam mode; practice mode has replay, slow playback and the transcript |
 | 🧩 Structures de la langue | — | 18 QCM · 15 min | Grammar and vocabulary in context |
 | 📖 Compréhension écrite | 39 QCM · 60 min | 29 QCM · 45 min | Documents from signs and ads (A1) to opinion pieces (C2) |
-| ✍️ Expression écrite | 3 tasks · 60 min | 3 tasks · 60 min | T1 message (60–120 words), T2 article (120–150), T3 two points of view (120–180). Live word counter, timed mock, graded /20 by task with corrections and a B2 model answer |
-| 🗣️ Expression orale | 3 tasks · 12 min | 3 tasks · 12 min | Voice exam with an AI examiner: T1 guided interview, T2 interaction (with a 2-min preparation screen), T3 point of view. Timed, no corrections during the task (like the real exam), scored /20 at the end |
+| ✍️ Expression écrite | 3 tasks · 60 min | 3 tasks · 60 min | T1 short message (60–120 words), T2 blog article telling an experience (120–150), T3 titled text on two points of view (120–180). Live word counter, timed mock, graded /20 by task with corrections and a B2 model answer |
+| 🗣️ Expression orale | 3 tasks · 12 min | 3 tasks · 12 min | Voice exam with an AI examiner: T1 guided interview, T2 interaction (with a 2-min preparation screen), T3 point of view. TCF Canada timings from formation-tcfcanada.com (2 min 10 · 2 min prep + 3 min 50 · 4 min 45) and task weights 3/7/10. Timed, no corrections during the task, scored /20 at the end |
 
 - **Practice** (10 questions at your level, instant explanations) or a **full timed mock exam** (A1 → C2 progression, score out of 699 with your CEFR level). Harder questions are worth more points. The official weighting isn't public, so the score is an estimate.
 - **Method lessons** for each test: format, scoring, traps, step-by-step strategy, plus a deeper AI lesson with worked examples.
+- **NCLC levels** (Canadian benchmarks used for immigration) are shown next to every TCF Canada score.
 - **TCF score dashboard** with your target: B2 = 400–499/699 (multiple-choice tests) and 10–13/20 (writing/speaking).
 - The **60-day plan and daily mission are TCF-based**: each day covers CO, CE, EE and EO practice, and each week has a TCF focus, with full mocks in weeks 4, 7 and 8.
 
 ### 🌐 Learn from websites
-- **Paste any link** (an RFI article, a TV5Monde page, a podcast transcript, a practice test…). Your tutor opens the page with Claude's server-side **web fetch** tool, then gives you a lesson (summary, vocabulary, grammar, TCF tip) plus TCF questions (reading or listening), writing subjects or speaking subjects built from it. If the page has practice questions, it reuses them.
-- **"Find fresh material for me"** searches trusted French sites (RFI, TV5Monde, 1jour1actu, franceinfo, Le Monde, Podcast Français Facile, …) with **web search** and builds an exercise from a current article at your level.
+- **Paste any link** (an RFI article, a TV5Monde page, a podcast transcript, a practice test…). The app reads the page through a free reader service (no AI credits), then gives you a lesson (summary, vocabulary, grammar, TCF tip) plus TCF questions (reading or listening), writing subjects or speaking subjects built from it. If the page has practice questions, it reuses them.
+- **"Find fresh material for me"** picks a current article at your level from RFI Français facile, 1jour1actu, RFI or franceinfo and builds an exercise from it.
 - Add the page's vocabulary to your flashcards in one tap. Your recent links are saved.
 - Pages behind a login or anti-bot protection can't be read (the official France Éducation International site blocks automated reading, so open it yourself).
-- Web search must be allowed for your API key: console.anthropic.com → Settings → Privacy.
+- **"Subjects candidates reported this month"** opens the monthly speaking and writing subject pages of formation-tcfcanada.com and prepares practice from them.
 
 ## 📞 Talk with a French local
 
@@ -70,16 +71,17 @@ Runs offline for flashcards, lessons, quizzes, reading library, dictation and pr
 2. Open that URL on your phone:
    - **Android (Chrome):** menu ⋮ → **Install app / Add to Home screen**
    - **iPhone (Safari):** Share → **Add to Home Screen**
-3. Open the app, paste your **Anthropic API key** (console.anthropic.com → API Keys) and take the placement test.
+3. Open the app, choose a **free AI service** (Google Gemini by default), get its free key (about 2 minutes, no bank card), paste it, tap **Save & test**, then take the placement test.
 
-> The key is stored only on your phone and sent only to `api.anthropic.com`. Set a monthly spend limit in the Anthropic Console.
+> The key is stored only on your phone and sent only to the service you chose.
 > For speech recognition, use **Chrome on Android** or **Safari on iPhone** and allow microphone access.
 
-## AI model and cost
+## AI engine and cost (free by default)
 
-- The default is **Claude Opus 5.5** (best teaching quality). You can switch to Sonnet 5.5 or Haiku 5.5 in Settings for lower cost.
+- **The app does not use your Claude subscription or Anthropic credits.** It runs on a free service with your own free key: **Google Gemini** (default), **Groq** or **OpenRouter** free models. "Find models" lists what your key can use and picks a suitable one.
 - "Response depth" defaults to *Quick* (`effort: low`), which suits conversation. Use *Thorough* for deep grammar lessons.
-- Server-side refusal fallbacks are enabled for Opus and Sonnet, so if a request is ever declined it is retried automatically on a fallback model.
+- Free plans have limits (requests per minute and per day). The app waits and retries when the per-minute limit is hit, and tells you when the daily allowance is used up; you can then switch to another free provider in Settings. Free services may use your messages to improve their products, so don't type sensitive personal information.
+- Claude is still available in Settings as an optional, paid engine (best quality, billed per request to an Anthropic API account). It is off unless you choose it.
 
 ## Honest note on "A2 → B2 in 2 months"
 
@@ -87,7 +89,7 @@ B2 usually takes about **400–600 study hours from A2**. In 60 days that is rou
 
 ## Tech
 
-Plain HTML/CSS/JS with no build step. It uses the official Anthropic JS SDK (`@anthropic-ai/sdk`, loaded from esm.sh), the Web Speech API for French TTS and speech recognition, `localStorage` for progress, and a service worker for offline use.
+Plain HTML/CSS/JS with no build step. Free providers are called through their OpenAI-compatible chat API; web pages are read through the Jina Reader service; the Web Speech API provides French voices and speech recognition; `localStorage` keeps progress; a service worker gives offline use. The Anthropic JS SDK is loaded only if you choose Claude.
 
 ```
 french-tutor/
@@ -98,7 +100,8 @@ french-tutor/
 └── js/
     ├── app.js            all screens
     ├── curriculum.js     8-week plan, grammar, vocab, quizzes, texts
-    ├── tutor.js          Claude integration (streaming + structured outputs)
+    ├── providers.js      free AI providers (Gemini, Groq, OpenRouter), model finder, web page reader
+    ├── tutor.js          tutor prompts; optional Claude path
     ├── tcf.js            TCF format, practice, mock exams, scoring, learning from websites
     ├── ui.js             shared UI helpers
     ├── personas.js       the French locals (Claire, Marius, Léa, Antoine)

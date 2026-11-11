@@ -4,7 +4,11 @@ const KEY = "french-tutor-v1";
 
 const defaults = () => ({
   settings: {
-    apiKey: "",
+    provider: "gemini",       // free by default; "claude" is optional and paid
+    keys: {},                 // { gemini: "...", groq: "...", openrouter: "...", custom: "..." }
+    models: {},               // chosen model per provider
+    customBase: "",
+    apiKey: "",               // Anthropic key, only used if provider is "claude"
     model: "claude-opus-5-5",
     effort: "low",
     supportLang: "English",

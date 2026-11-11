@@ -6,6 +6,62 @@ import { PERSONAS, getPersona } from "./personas.js";
 
 import { $, view, esc, md, toast, speakBtn, level, levelBucket, shuffle, needsKey, keyNotice, me, renderAI, fmtTime, bus } from "./ui.js";
 import { renderTCF } from "./tcf.js";
+import { PROVIDERS, providerId, activeKey, activeModel, findModels, saveProvider } from "./providers.js";
+
+// ---------- AI engine setup (free provider by default) ----------
+function aiSetup(box) {
+  let id = providerId();
+  const draw = () => {
+    const P = PROVIDERS[id];
+    box.innerHTML = `
+    <label>AI engine</label>
+    <select id="ai-prov">${Object.entries(PROVIDERS).map(([k, v]) => `<option value="${k}" ${k === id ? "selected" : ""}>${esc(v.name)}</option>`).join("")}</select>
+    <p class="muted small">${esc(P.note)}${P.keyUrl ? ` <a href="${P.keyUrl}" target="_blank" rel="noopener">Get your key →</a>` : ""}</p>
+    ${id === "custom" ? `<label>Service address</label><input id="ai-base" placeholder="https://…/v1" value="${esc(store.settings.customBase || "")}">` : ""}
+    <label>Key</label>
+    <input id="ai-key" type="password" placeholder="${esc(P.keyHint)}" autocomplete="off" value="${esc(activeKey(id))}">
+    <label>Model</label>
+    ${id === "claude"
+      ? `<select id="ai-model">${[["claude-opus-5-5", "Claude Opus 5.5"], ["claude-sonnet-5-5", "Claude Sonnet 5.5 (cheaper)"], ["claude-haiku-5-5", "Claude Haiku 5.5 (cheapest)"]].map(([v, l]) => `<option value="${v}" ${activeModel(id) === v ? "selected" : ""}>${l}</option>`).join("")}</select>`
+      : `<input id="ai-model" list="ai-models" value="${esc(activeModel(id))}" autocomplete="off"><datalist id="ai-models"></datalist>`}
+    <div class="row wrap">
+      ${id === "claude" ? "" : `<button class="btn ghost small" id="ai-find">🔎 Find models</button>`}
+      <button class="btn small" id="ai-test">Save & test</button>
+    </div>
+    <p class="small" id="ai-msg"></p>
+    <p class="muted small">Your key stays on this phone and is sent only to the service you chose. ${id === "claude" ? "<b>Claude bills each request to your Anthropic account.</b>" : "This app never uses your Claude subscription or Anthropic credits."}</p>`;
+    const msg = (t, cls = "muted") => { const m = $("#ai-msg", box); m.className = "small " + cls; m.textContent = t; };
+    const commit = () => saveProvider({ id, key: $("#ai-key", box).value.trim(), model: $("#ai-model", box).value.trim(), customBase: $("#ai-base", box)?.value.trim() });
+    $("#ai-prov", box).onchange = (e) => { id = e.target.value; draw(); };
+    box.querySelectorAll("#ai-key,#ai-model,#ai-base").forEach((el) => (el.onchange = commit));
+    const find = async () => {
+      const key = $("#ai-key", box).value.trim();
+      if (!key) { msg("Paste your key first.", "error"); return false; }
+      msg("Looking for models…");
+      try {
+        const list = await findModels(id, key, $("#ai-base", box)?.value.trim());
+        if (!list.length) throw new Error("No chat models found for this key.");
+        $("#ai-models", box).innerHTML = list.map((m) => `<option value="${esc(m)}">`).join("");
+        const cur = $("#ai-model", box).value.trim();
+        if (!list.includes(cur)) $("#ai-model", box).value = list[0];
+        msg(`✅ ${list.length} models found. Using ${$("#ai-model", box).value}.`, "ok");
+        return true;
+      } catch (e) { msg(e.message, "error"); return false; }
+    };
+    $("#ai-find", box) && ($("#ai-find", box).onclick = async () => { if (await find()) commit(); });
+    $("#ai-test", box).onclick = async () => {
+      if (!$("#ai-key", box).value.trim()) return msg("Paste your key first.", "error");
+      if (id !== "claude" && !(await find())) return;
+      commit();
+      msg("Testing…");
+      try {
+        const reply = await streamReply([{ role: "user", content: "Dis seulement : « Bonjour, je suis prête ! »" }], { system: "Tu réponds en français, en une phrase.", maxTokens: 100 });
+        msg("✅ Works! The tutor says: " + reply.trim().slice(0, 80), "ok");
+      } catch (e) { msg(e.message, "error"); }
+    };
+  };
+  draw();
+}
 
 
 document.addEventListener("click", (e) => {
@@ -63,8 +119,8 @@ function renderWelcome() {
   </div>
   <div class="card">
     <h3>1. Connect the AI tutor</h3>
-    <p class="muted">Paste your Anthropic API key (get one at console.anthropic.com). It stays only on this phone.</p>
-    <input id="wk-key" type="password" placeholder="sk-ant-..." autocomplete="off" value="${esc(store.settings.apiKey)}">
+    <p class="muted">The tutor runs on a <b>free</b> AI service. Get a free key (about 2 minutes, no bank card), paste it here and tap “Save & test”.</p>
+    <div id="wk-ai"></div>
     <h3 style="margin-top:16px">2. Your current level</h3>
     <select id="wk-level">${["A1", "A2", "A2+", "B1", "B1+", "B2-"].map((l) => `<option ${l === level() ? "selected" : ""}>${l}</option>`).join("")}</select>
     <div class="row">
@@ -73,12 +129,13 @@ function renderWelcome() {
     </div>
   </div>`;
   const commit = () => {
-    store.settings.apiKey = $("#wk-key").value.trim();
+    $("#ai-key")?.onchange?.();
     store.progress.level = $("#wk-level").value;
     store.settings.onboarded = true;
     store.progress.startDate = today();
     save();
   };
+  aiSetup($("#wk-ai"));
   $("#wk-start").onclick = () => { commit(); location.hash = "home"; route(); };
   $("#wk-test").onclick = () => { commit(); location.hash = "placement"; };
 }
@@ -899,15 +956,10 @@ function renderSettings() {
   const s = store.settings;
   view.innerHTML = `<h2>⚙️ Settings</h2>
   <div class="card">
-    <label>Anthropic API key</label>
-    <input id="s-key" type="password" value="${esc(s.apiKey)}" placeholder="sk-ant-..." autocomplete="off">
-    <p class="muted small">Stored only on this device. Get one at console.anthropic.com → API Keys. Set a monthly spend limit there.</p>
-    <label>AI model</label>
-    <select id="s-model">
-      ${[["claude-opus-5-5", "Claude Opus 5.5 — best teacher"], ["claude-sonnet-5-5", "Claude Sonnet 5.5 — faster, cheaper"], ["claude-haiku-5-5", "Claude Haiku 5.5 — fastest, cheapest"]].map(([v, l]) => `<option value="${v}" ${s.model === v ? "selected" : ""}>${l}</option>`).join("")}
-    </select>
-    <label>Response depth</label>
-    <select id="s-effort">${[["low", "Quick (best for conversation)"], ["medium", "Balanced"], ["high", "Thorough"]].map(([v, l]) => `<option value="${v}" ${s.effort === v ? "selected" : ""}>${l}</option>`).join("")}</select>
+    <h3>AI tutor (free)</h3>
+    <div id="s-ai"></div>
+  </div>
+  <div class="card">
     <label>Explanations in</label>
     <select id="s-lang">${["English", "Spanish", "Portuguese", "German", "Italian", "Arabic", "Chinese", "Hindi"].map((l) => `<option ${s.supportLang === l ? "selected" : ""}>${l}</option>`).join("")}</select>
     <label>Voice speed: <span id="rate-v">${s.voiceRate}</span></label>
@@ -930,6 +982,7 @@ function renderSettings() {
     <button class="btn ghost" id="s-export">Export progress</button>
     <button class="btn bad" id="s-reset">Reset everything</button>
   </div>`;
+  aiSetup($("#s-ai"));
   $("#s-rate").oninput = (e) => ($("#rate-v").textContent = e.target.value);
   const pickedPersona = () => getPersona(view.querySelector("[name=s-persona]:checked")?.value);
   view.querySelectorAll("[name=s-persona]").forEach((r) => (r.onchange = () => {
@@ -942,12 +995,12 @@ function renderSettings() {
   };
   $("#s-save").onclick = () => {
     if (pickedPersona().id !== s.persona) store.chat = [];
-    Object.assign(s, { apiKey: $("#s-key").value.trim(), model: $("#s-model").value, effort: $("#s-effort").value, supportLang: $("#s-lang").value, voiceRate: +$("#s-rate").value, onboarded: true,
+    Object.assign(s, { supportLang: $("#s-lang").value, voiceRate: +$("#s-rate").value, onboarded: true,
       persona: pickedPersona().id, correctionMode: $("#s-corr").value, patience: $("#s-pat").value, voiceName: $("#s-voice").value });
     save(); toast("Saved ✔");
   };
   $("#s-export").onclick = () => {
-    const data = { ...store, settings: { ...store.settings, apiKey: "" } };
+    const data = { ...store, settings: { ...store.settings, apiKey: "", keys: {} } };
     const a = document.createElement("a");
     a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }));
     a.download = `french-progress-${today()}.json`; a.click();

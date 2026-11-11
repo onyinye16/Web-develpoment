@@ -1,9 +1,12 @@
-// AI tutor: talks to Claude through the official Anthropic TypeScript/JS SDK.
-// The SDK is loaded lazily so the offline parts of the app work without network.
+// AI tutor. By default it runs on a free provider (see providers.js).
+// Claude is optional: when chosen, it is called through the official Anthropic JS SDK, loaded lazily.
 
 import { store } from "./store.js";
 import { WEEKS } from "./curriculum.js";
 import { getPersona } from "./personas.js";
+import { TutorError, isClaude, chatStream, chatJSON } from "./providers.js";
+
+export { TutorError };
 
 const SDK_URL = "https://esm.sh/@anthropic-ai/sdk@1.2.0";
 let AnthropicLib = null;
@@ -12,7 +15,7 @@ let clientKey = null;
 
 async function getClient() {
   const key = store.settings.apiKey;
-  if (!key) throw new TutorError("Add your Anthropic API key in Settings to use the AI tutor.");
+  if (!key) throw new TutorError("Add your Anthropic API key in Settings to use Claude.");
   if (!AnthropicLib) {
     try {
       AnthropicLib = (await import(SDK_URL)).default;
@@ -28,7 +31,6 @@ async function getClient() {
   return client;
 }
 
-export class TutorError extends Error {}
 
 function friendlyError(err) {
   if (err instanceof TutorError) return err;
@@ -55,7 +57,7 @@ export function systemPrompt(extra = "", { call = false } = {}) {
   const p = store.progress;
   const me = getPersona(s.persona);
   const correctAloud = s.correctionMode === "live";
-  return `You are ${me.name}, ${me.age}, a real local from ${me.city}, France. You are NOT a classroom teacher or a robot: you are a French friend the learner talks to every day, who also happens to be an excellent French tutor (you've coached many foreigners and know the DELF exams well).
+  return `You are ${me.name}, ${me.age}, a real local from ${me.city}, France. You are NOT a classroom teacher or a robot: you are a French friend the learner talks to every day, who also happens to be an excellent French tutor (you've coached many foreigners and know the TCF exam well).
 
 WHO YOU ARE (stay consistent, invent small everyday details that fit, remember what you've said):
 ${me.bio}
@@ -106,6 +108,7 @@ export function currentWeek() {
  * onText receives each text chunk. Returns the full text.
  */
 export async function streamReply(messages, { system, onText, maxTokens = 4000 } = {}) {
+  if (!isClaude()) return chatStream(messages, { system: system || systemPrompt(), onText, maxTokens });
   const c = await getClient();
   const model = store.settings.model;
   try {
@@ -135,6 +138,8 @@ export async function streamReply(messages, { system, onText, maxTokens = 4000 }
 /** Ask for JSON matching `schema` (structured outputs).
  *  `web: "fetch"` lets Claude open URLs in the prompt; `web: "search"` lets it also search the web. */
 export async function askJSON(prompt, schema, { system, web = null, domains = null } = {}) {
+  const sys = system || systemPrompt("When asked to produce an exercise, output ONLY the requested JSON.");
+  if (!isClaude()) return chatJSON(prompt, schema, { system: sys });
   const c = await getClient();
   const model = store.settings.model;
   const tools = web ? webTools(web, domains) : undefined;
@@ -180,7 +185,7 @@ export async function askJSON(prompt, schema, { system, web = null, domains = nu
 
 // Trusted French-learning sites the tutor may search.
 export const TRUSTED_SITES = [
-  "francaisfacile.rfi.fr", "rfi.fr", "apprendre.tv5monde.com", "tv5monde.com", "1jour1actu.com",
+  "formation-tcfcanada.com", "reussir-tcfcanada.com", "francaisfacile.rfi.fr", "rfi.fr", "apprendre.tv5monde.com", "tv5monde.com", "1jour1actu.com",
   "francetvinfo.fr", "lemonde.fr", "bonjourdefrance.com", "lepointdufle.net", "france-education-international.fr",
   "podcastfrancaisfacile.com", "francaisauthentique.com", "connexionfrancaise.com", "lefigaro.fr", "20minutes.fr",
 ];

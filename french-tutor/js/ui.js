@@ -3,6 +3,7 @@
 import { store } from "./store.js";
 import { getPersona } from "./personas.js";
 import { canSpeak } from "./speech.js";
+import { activeKey } from "./providers.js";
 
 export const $ = (s, el = document) => el.querySelector(s);
 export const view = document.getElementById("view");
@@ -30,8 +31,8 @@ export const speakBtn = (text) => canSpeak ? `<button class="icon-btn say" data-
 export const level = () => store.progress.level;
 export const levelBucket = () => (level().startsWith("B2") ? "B2" : level().startsWith("B1") ? "B1" : "A2");
 export const shuffle = (a) => a.map((v) => [Math.random(), v]).sort((x, y) => x[0] - y[0]).map((x) => x[1]);
-export const needsKey = () => !store.settings.apiKey;
-export const keyNotice = () => `<div class="notice">🔑 The AI tutor needs your Anthropic API key. <a href="#settings">Add it in Settings</a>. Offline exercises still work.</div>`;
+export const needsKey = () => !activeKey();
+export const keyNotice = () => `<div class="notice">🔑 The tutor needs a <b>free AI key</b> (2 minutes, no bank card). <a href="#settings">Set it up in Settings</a>. Offline exercises still work.</div>`;
 export const me = () => getPersona(store.settings.persona);
 export const isCorr = (l) => /^\s*(✏️|💡)/u.test(l);
 
